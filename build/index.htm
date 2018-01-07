@@ -1,0 +1,42 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
+    <link href="https://unpkg.com/vuetify/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+</head>
+
+<body>
+    <div id="root">
+        <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+            Button
+        </button>
+
+        <button class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored">
+            <i class="material-icons">add</i>
+        </button>
+
+        <input id="input" v-model="message" />
+        <button id="button" @click="onAdd">Add</button>
+        <br/> This is {{message}}
+        <br/> --- tlist
+        <br/>
+        <tlist></tlist>
+        <div :style="ListStyle" v-for="item in items">{{ item.name }}</div>
+        --- view
+        <br/>
+        <router-view></router-view>
+        <router-link to="/">Home</router-link> |
+        <router-link to="/stuff">Stuff</router-link>
+    </div>
+    <script src="webpack/main-bundle.js"></script>
+    <!--
+    <script src="https://vuejs.org/js/vue.js"></script>
+    <script src="task.js"></script>
+    -->
+</body>
+
+</html>
