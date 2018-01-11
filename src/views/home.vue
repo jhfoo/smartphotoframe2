@@ -1,0 +1,41 @@
+<template>
+    <div>
+        <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+            Me Button
+        </button>
+
+        <button class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored">
+            <i class="material-icons">add</i>
+        </button>
+
+        <input id="input" v-model="message" />
+        <button id="button" @click="onAdd">Add</button>
+        <br/> This is {{message}}
+        <br/> --- tlist
+        <br/>
+        <!--
+                    <tlist></tlist>
+                    -->
+        <div :style="ListStyle" v-for="item in items">{{ item.name }}</div>
+        --- view
+        <br/>
+    </div>
+</template>
+
+<script>
+export default {
+    name:'Drawer',
+    components:{  },
+    data() {
+        return {
+            message: '',
+            items:[]
+        }
+    },
+    methods: {
+        onAdd() {
+
+        }
+    }
+}
+</script>

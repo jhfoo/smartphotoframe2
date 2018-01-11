@@ -1,20 +1,7 @@
-<!doctype html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <title>SMARTPhotoFrame2</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
-    <style>
-
-    </style>
-</head>
-
-<body>
-    <div id="root" class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
+<template>
+    <!-- The drawer is always open in large screens. The header is always shown,
+        even in small screens. -->
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
         <header class="mdl-layout__header">
             <div class="mdl-layout__header-row">
                 <span class="mdl-layout-title">SMART Photo Frame 2</span>
@@ -39,8 +26,4 @@
             </div>
         </main>
     </div>
-    <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-    <script src="js/main-bundle.js"></script>
-</body>
-
-</html>
+</template>

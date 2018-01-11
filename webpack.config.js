@@ -50,5 +50,10 @@ module.exports = {
             }
         }],
         loaders: []
+    },
+    devServer: {
+        allowedHosts:[
+            '.kungfoo.home'
+        ]
     }
 };
