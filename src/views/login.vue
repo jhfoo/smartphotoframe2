@@ -1,18 +1,18 @@
 <style>
-.LoginCard {
-    margin-left:auto; 
-    margin-right:auto;
-}
+    .LoginCard {
+        margin-left: auto;
+        margin-right: auto;
+    }
 </style>
 <template>
     <div>
         <br/>
         <div v-if="isLoggedIn()" class="LoginCard demo-card-event mdl-card mdl-shadow--2dp">
             <div class="mdl-card__title mdl-card--expand" style="background-color: #cc0">
-                Welcome
+                Hello {{getFbAccountLastName()}}!
             </div>
             <div class="mdl-card__supporting-text">
-                You are logged into Facebook. You will be redirected to select your albums in 5secs. If this is not your account, select
+                You are logged into Facebook. You will be redirected to select your albums in {{TimerCountdown}}secs. If this is not your account, select
                 the Log Out button below now.
             </div>
 
@@ -48,8 +48,9 @@
             return {
                 message: '',
                 items: [],
-                isAutoLogin: true,
-                FbAccount: window.FbAccount
+                RedirectTimer: null,
+                TimerCountdown: 5,
+                isAutoLogin: true
             }
         },
         mounted: function () {
@@ -60,6 +61,9 @@
             }
         },
         methods: {
+            getFbAccountLastName: function () {
+                return window.FbAccount.LastName;
+            },
             isLoggedIn: function () {
                 //  this.$router.push('home');
                 console.log('method: login.isLoggedIn');
@@ -72,9 +76,31 @@
                 if ('authResponse' in resp) {
                     if (resp.status === 'connected') {
                         console.log('Logged in');
-                        window.FbAccount = resp.authResponse;
-                        this.FbAccount = resp.authResponse;
-                        self.$forceUpdate();
+                        FB.api('/me', 'get', {
+                            fields: 'last_name, first_name'
+                        }, function (resp) {
+                            if (!resp && resp.error)
+                                console.error('error in response: ', resp.error);
+                            else {
+                                console.log('response: ', resp);
+                                window.FbAccount = {
+                                    LastName: resp.last_name,
+                                    FirstName: resp.first_name,
+                                    id: resp.id
+                                };
+                                // set countdown to 5sec
+                                self.TimerCountdown = 5;
+                                self.RedirectTimer = setInterval(() => {
+                                    self.TimerCountdown--;
+                                    if (self.TimerCountdown === 0) {
+                                        clearInterval(self.RedirectTimer);
+                                        self.RedirectTimer = null;
+                                        self.$router.push('albums');
+                                    }
+                                }, 1000);
+                                self.$forceUpdate();
+                            }
+                        });
                     } else {
                         if (this.isAutoLogin) {
                             // only auto login once per page load
@@ -87,7 +113,9 @@
                 }
             },
             onFbLogin: function () {
-                FB.login(this.handleFbLoginResponse);
+                FB.login(this.handleFbLoginResponse, {
+                    scope: 'user_photos, public_profile'
+                });
             },
             onFbLogout: function () {
                 var self = this;
