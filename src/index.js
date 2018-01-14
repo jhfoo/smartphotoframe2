@@ -6,8 +6,6 @@ import Drawer from './views/drawer.vue';
 
 Vue.config.productionTip = false;
 
-/* global FB, Config */
-
 // init fb
 var self = this;
 const Config = {
@@ -24,12 +22,6 @@ window.fbAsyncInit = function () {
     });
 
     const VueApp = initVue();
-    FB.getLoginStatus(function (response) {
-        console.log(response);
-        VueApp.onFbStatusChangeCallback(response);
-        // statusChangeCallback(response);
-    });
-
     // FB.AppEvents.logPageView();
 };
 
@@ -75,9 +67,6 @@ function initVue() {
                 });
                 this.message = '';
                 this.ListStyle = 'color: #0e0';
-            },
-            onFbStatusChangeCallback() {
-                console.log('I am called!');
             }
         },
         mounted() {}

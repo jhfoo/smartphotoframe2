@@ -4,10 +4,10 @@
             <span class="mdl-layout-title">Title Here!</span>
         </div>
         <nav class="mdl-navigation">
-            <a class="mdl-navigation__link" href="">Albums</a>
-            <a class="mdl-navigation__link" href="">Full Screen</a>
-            <a class="mdl-navigation__link" href="">About</a>
-            <a class="mdl-navigation__link" href="">Log Out</a>
+            <router-link to="/albums" class="mdl-navigation__link">Albums</router-link>
+            <router-link to="/fullscreen" class="mdl-navigation__link">Full Screen</router-link>
+            <router-link to="/about" class="mdl-navigation__link">About</router-link>
+            <router-link to="/logoff" class="mdl-navigation__link">Log Off</router-link>
         </nav>
     </div>
 </template>

@@ -23,19 +23,22 @@
 </template>
 
 <script>
-export default {
-    name:'Drawer',
-    components:{  },
-    data() {
-        return {
-            message: '',
-            items:[]
-        }
-    },
-    methods: {
-        onAdd() {
-
+    export default {
+        name: 'Drawer',
+        components: {},
+        data() {
+            return {
+                message: '',
+                items: []
+            }
+        },
+        beforeMount: function () {
+            console.log('event: albums.beforeMount');
+            if (!window.FbAccount) {
+                this.$router.push('login');
+            }
+        },
+        methods: {
         }
     }
-}
 </script>
