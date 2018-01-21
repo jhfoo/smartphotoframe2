@@ -10,15 +10,6 @@
 
         <input id="input" v-model="message" />
         <button id="button" @click="onAdd">Add</button>
-        <br/> This is {{message}}
-        <br/> --- tlist
-        <br/>
-        <!--
-                    <tlist></tlist>
-                    -->
-        <div :style="ListStyle" v-for="item in items">{{ item.name }}</div>
-        --- view
-        <br/>
     </div>
 </template>
 

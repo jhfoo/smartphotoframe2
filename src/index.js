@@ -1,10 +1,15 @@
 import Vue from 'vue';
+import store from './store';
+import Vuetify from 'vuetify';
+import 'vuetify/dist/vuetify.css';
 import 'axios';
 import VueRouter from 'vue-router';
 import router from './routes';
+import App from './views/app.vue';
 import Drawer from './views/drawer.vue';
 
 Vue.config.productionTip = false;
+Vue.use(Vuetify);
 
 // init fb
 var self = this;
@@ -45,6 +50,8 @@ function initVue() {
         components: {
             Drawer
         },
+        store,
+        render: h => h(App),
         router: router,
         data: {
             ListStyle: 'color: #ee0',

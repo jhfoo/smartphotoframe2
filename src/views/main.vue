@@ -21,9 +21,7 @@
             <div class="page-content">
                 <!-- Your content goes here -->
                 <router-view></router-view>
-                <router-link to="/">Home</router-link> |
-                <router-link to="/stuff">Stuff</router-link>
-            </div>
+xx            </div>
         </main>
     </div>
 </template>

@@ -19,6 +19,12 @@ var routes = [
         component: () => import ( /* webpackChunkName: "views" */ './views/albums.vue')
     },
     {
+        path:'/photos',
+        name:'photos',
+        props: true,
+        component: () => import ( /* webpackChunkName: "views" */ './views/photos.vue')
+    },
+    {
         path:'/login',
         name:'login',
         props: true,

@@ -1,42 +1,50 @@
 <style>
     .LoginCard {
+        width: 400px;
         margin-left: auto;
         margin-right: auto;
     }
 </style>
 <template>
-    <div>
-        <br/>
-        <div v-if="isLoggedIn()" class="LoginCard demo-card-event mdl-card mdl-shadow--2dp">
-            <div class="mdl-card__title mdl-card--expand" style="background-color: #cc0">
-                Hello {{getFbAccountLastName()}}!
-            </div>
-            <div class="mdl-card__supporting-text">
-                You are logged into Facebook. You will be redirected to select your albums in {{TimerCountdown}}secs. If this is not your account, select
-                the Log Out button below now.
-            </div>
-
-            <div class="mdl-card__actions mdl-card--border">
-                <button v-on:click="onFbLogout" class="mdl-button mdl-js-button mdl-button--colored mdl-js-ripple-effect">
-                    <i class="material-icons">exit_to_app</i> Log Off Facebook
-                </button>
-            </div>
-        </div>
-        <div v-else class="LoginCard demo-card-event mdl-card mdl-shadow--2dp">
-            <div class="mdl-card__title mdl-card--expand" style="background-color: #cc0">
-                See You Soon
-            </div>
-            <div class="mdl-card__supporting-text">
-                To proceed, please log into your Facebook account by selecting the Log In button below.
-                <br/>
-            </div>
-            <div class="mdl-card__actions mdl-card--border">
-                <button v-on:click="onFbLogin" class="mdl-button mdl-js-button mdl-button--colored mdl-js-ripple-effect">
-                    <i class="material-icons">account_box</i> Log In to Facebook
-                </button>
-            </div>
-        </div>
-    </div>
+    <v-content>
+        <v-container fluid>
+            <v-slide-y-transition mode="out-in">
+                <v-layout column align-center>
+                    <v-card v-if="isLoggedIn()" class="LoginCard">
+                        <v-card-title primary-title>
+                            <h3 class="headline mb-0">Hello {{getFbAccountLastName()}}!</h3>
+                        </v-card-title>
+                        <v-card-text>
+                            You are logged into Facebook. You will be redirected
+                            <br/> to select your albums in {{TimerCountdown}}secs.
+                            <br/>
+                            <br/>If this is not your account, select the Log off button below now.
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn @click.stop="onFbLogout" flat color="orange">
+                                <v-icon>exit_to_app</v-icon> Log off Facebook</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                    <v-card v-else class="LoginCard demo-card-event mdl-card mdl-shadow--2dp">
+                        <v-card-title primary-title>
+                            <h3 class="headline mb-0">See You Soon</h3>
+                        </v-card-title>
+                        <v-card-text>
+                            <div>To proceed, please log into your Facebook account by
+                                <br/> selecting the Log In button below.</div>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn @click.stop="onFbLogin" flat color="orange">
+                                <v-icon>account_box</v-icon> Log in to Facebook</v-btn>
+                            <v-btn flat color="orange">About</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-layout>
+            </v-slide-y-transition>
+        </v-container>
+    </v-content>
 </template>
 
 <script>
@@ -89,7 +97,8 @@
                                     id: resp.id
                                 };
                                 // set countdown to 5sec
-                                self.TimerCountdown = 5;
+                                self.TimerCountdown = 2;
+                                // self.TimerCountdown = 5;
                                 self.RedirectTimer = setInterval(() => {
                                     self.TimerCountdown--;
                                     if (self.TimerCountdown === 0) {
