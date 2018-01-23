@@ -7,6 +7,9 @@ export default new Vuex.Store({
         LeftDrawer: {
             isShow: false
         },
+        Appbar: {
+            isShow: true
+        },
         DebugMessage: '',
         AppTitle: 'Woohoo',
         version: '[AIV]{version}[/AIV]'
@@ -15,6 +18,11 @@ export default new Vuex.Store({
         setLeftDrawer(state, isShow) {
             isShow = isShow ? isShow : false;
             state.LeftDrawer.isShow = isShow;
+        },
+        setAppbar(state, isShow) {
+            console.log('store.setappbar: ', isShow);
+            isShow = isShow ? isShow : false;
+            state.Appbar.isShow = isShow;
         },
         setDebugMessage(state, NewMsg) {
             NewMsg = NewMsg ? NewMsg : '';

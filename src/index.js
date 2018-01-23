@@ -46,7 +46,7 @@ Vue.use(VueRouter);
 
 function initVue() {
     return new Vue({
-        el: '#root',
+        el: '#app',
         components: {
             Drawer
         },

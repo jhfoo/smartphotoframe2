@@ -63,6 +63,7 @@
         },
         mounted: function () {
             console.log('event: login.mounted');
+            this.$store.commit('setAppbar',true);
             if (!window.FbAccount) {
                 // get Fb login status if not registered in window
                 FB.getLoginStatus(this.handleFbLoginResponse);
@@ -84,6 +85,7 @@
                 if ('authResponse' in resp) {
                     if (resp.status === 'connected') {
                         console.log('Logged in');
+                        // call FB api to retreive account name
                         FB.api('/me', 'get', {
                             fields: 'last_name, first_name'
                         }, function (resp) {

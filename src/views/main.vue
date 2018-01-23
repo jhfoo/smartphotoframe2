@@ -21,7 +21,7 @@
             <div class="page-content">
                 <!-- Your content goes here -->
                 <router-view></router-view>
-xx            </div>
+            </div>
         </main>
     </div>
 </template>
