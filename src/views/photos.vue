@@ -6,12 +6,27 @@
         -o-transition: background-position .5s ease-in;
         transition: background-position 5s ease-in;
     }
+
+    .PhotoOverlayBase {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        backgroundColor: rgba(0, 0, 0, 0);
+        transition: background-color .5s linear;
+    }
+
+    .BlackBackground {
+        background-color: #000;
+    }
 </style>
 
 <template>
     <div>
-        <div v-bind:style="PhotoStyle" v-bind:class="TransitClass">{{ImageUrl}}
-            <br/>{{debug}}
+        <div id="photo" v-bind:style="PhotoStyle">{{debug}}
+        </div>
+        <div v-bind:class="{PhotoOverlayBase: true, BlackBackground: isBlackBackground}">Overlay
         </div>
     </div>
 </template>
@@ -25,12 +40,13 @@
         props: ['AlbumId'],
         data() {
             return {
+                once: true,
                 message: '',
                 photos: [],
                 MaxPhotoCount: 20,
-                ImageUrl: '',
                 debug: '',
-                TransitClass: '',
+                DebugCount: 3,
+                CurrentPhotoIdx: 0,
                 PhotoStyle: {
                     backgroundColor: '#c0c',
                     backgroundSize: 'cover',
@@ -39,7 +55,8 @@
                     top: 0,
                     bottom: 0,
                     position: 'absolute'
-                }
+                },
+                isBlackBackground: true
             }
         },
         beforeRouteLeave(to, from, next) {
@@ -70,6 +87,10 @@
         mounted: function () {
             this.$store.commit('setAppbar', false);
             this.loadFbPhotos();
+            if (this.once) {
+                this.once = false;
+                document.getElementById('photo').addEventListener('transitionend', this.onTransitionEnd);
+            }
         },
         updated: function () {
             console.log('photos.updated()');
@@ -93,30 +114,85 @@
                     document.documentElement.clientHeight
                 );
             },
-            showPhotos() {
-                var ParentAspectRatio = this.getWidth() / this.getHeight();
-                this.ImageUrl = this.photos[0].images[0].source;
-                console.log('url(\'' + this.photos[0].images[0].source + '\')');
-                this.PhotoStyle.backgroundImage = 'url(\'' + this.photos[0].images[0].source +
-                    '\')';
-                var PhotoAspectRatio = this.photos[0].images[0].width / this.photos[0].images[0].height;
-                if (PhotoAspectRatio < ParentAspectRatio) {
-                    // scroll vertical
-                    this.PhotoStyle.transition = 'background-position 5s linear';
-                    var ScrollHeight = parseInt(this.getWidth()/ this.photos[0].images[0].width * this.photos[0].images[0].height)  - this.getHeight();
-                    this.PhotoStyle.backgroundPosition = '0px -' + ScrollHeight + 'px';
-                    // this.TransitClass = "scrollDown";
-                    // this.PhotoStyle.backgroundPosition = '0px -250px';
-                } else {
-                    // scroll horizontal
+            onTransitionEnd(evt) {
+                console.log('photos.onTransitionEnd');
+                // set next photo index
+                if (this.CurrentPhotoIdx == this.photos.length - 1) {
+                    this.CurrentPhotoIdx = 0;
+                } else
+                    this.CurrentPhotoIdx++;
+
+                // fade 2 black
+                this.isBlackBackground = true;
+                var self = this;
+                setTimeout(() => {
+                    self.PhotoStyle = {
+                        backgroundColor: '#c0c',
+                        backgroundSize: 'cover',
+                        left: 0,
+                        right: 0,
+                        top: 0,
+                        bottom: 0,
+                        position: 'absolute'
+                    };
+                    self.showPhoto();
+                }, 2 * 1000);
+                // this.PhotoStyle.transition = 'none';
+                // this.PhotoStyle.backgroundPosition = '0px 0px';
+                // delete this.PhotoStyle.backgroundImage;
+                console.log('photos.onTransitionEnd end');
+                //this.$forceUpdate();
+                // this.showPhoto();
+            },
+            reallyShowPhoto() {
+                if (this.DebugCount) {
+                    this.DebugCount--;
+
+                    // load image into display block
+                    var CurrentPhoto = this.photos[this.CurrentPhotoIdx].images[0];
+                    console.log('index: %d, %s', this.CurrentPhotoIdx, CurrentPhoto.source);
+                    this.PhotoStyle.backgroundImage = 'url(\'' + CurrentPhoto.source + '\')';
+
+                    // unhide display block
+                    this.isBlackBackground = false;
+
+                    var self = this;
+                    setTimeout(() => {
+                        // calculate sliding action
+                        var ParentAspectRatio = this.getWidth() / this.getHeight();
+                        var PhotoAspectRatio = CurrentPhoto.width / CurrentPhoto.height;
+                        self.debug = 'Parent aspect ratio: ' + ParentAspectRatio + '<br/>' +
+                            'photo aspect ratio: ' + PhotoAspectRatio;
+
+                        if (PhotoAspectRatio < ParentAspectRatio) {
+                            // scroll vertical
+                            self.PhotoStyle.transition = 'background-position 5s linear';
+                            var ScrollHeight = parseInt(self.getWidth() / CurrentPhoto.width * CurrentPhoto.height) -
+                                self.getHeight();
+                            console.log('Scroll down %d px', ScrollHeight);
+                            self.PhotoStyle.backgroundPosition = '0px -' + ScrollHeight + 'px';
+                        } else {
+                            // scroll horizontal
+                        }
+                    }, 1 * 500);
                 }
-                this.debug = 'Parent aspect ratio: ' + ParentAspectRatio + '<br/>' +
-                    'photo aspect ratio: ' + PhotoAspectRatio;
-                // self.$store.commit('setDebugMessage', 'Redirecting to dummy');
-                // setTimeout(() => {
-                //     console.log('route to dummy');
-                //     self.$router.push('dummy');
-                // }, 3 * 1000);
+            },
+            showPhoto() {
+                // reset image position
+
+                // load image into memory
+                var image = document.createElement('img');
+                var self = this;
+                image.addEventListener('load', (evt) => {
+                    console.log('Image loaded');
+                    image.remove();
+                    self.reallyShowPhoto();
+                });
+
+                // load image
+                var CurrentPhoto = this.photos[this.CurrentPhotoIdx].images[0];
+                console.log('Loading %d:%s...', this.CurrentPhotoIdx, CurrentPhoto.source);
+                image.src = CurrentPhoto.source;
             },
             loadFbPhotos: function (url) {
                 console.log('photos.loadFbPhotos()');
@@ -151,11 +227,12 @@
                         });
                         if (self.photos.length < self.MaxPhotoCount && resp.paging && resp.paging.next) {
                             // load next page of photo meta data
+                            self.CurrentPhotoIdx = 0;
                             self.loadFbPhotos(resp.paging.next);
                         } else {
                             // load the first photo
                             self.$store.commit('setDebugMessage', 'Photo meta data loaded');
-                            self.showPhotos();
+                            self.showPhoto();
                         }
                     }
                 });
