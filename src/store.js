@@ -10,6 +10,9 @@ export default new Vuex.Store({
         Appbar: {
             isShow: true
         },
+        footer: {
+            isShow: true
+        },
         DebugMessage: '',
         AppTitle: 'Woohoo',
         version: '[AIV]{version}[/AIV]'
@@ -23,6 +26,11 @@ export default new Vuex.Store({
             console.log('store.setappbar: ', isShow);
             isShow = isShow ? isShow : false;
             state.Appbar.isShow = isShow;
+        },
+        showFooter(state, isShow) {
+            console.log('store.showfooter: ', isShow);
+            isShow = isShow ? isShow : false;
+            state.footer.isShow = isShow;
         },
         setDebugMessage(state, NewMsg) {
             NewMsg = NewMsg ? NewMsg : '';

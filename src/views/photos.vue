@@ -7,6 +7,16 @@
         transition: background-position 5s ease-in;
     }
 
+    .PhotoStyle {
+        background-color: #c0c;
+        background-size: cover;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        position: absolute;
+    }
+
     .PhotoOverlayBase {
         position: absolute;
         left: 0;
@@ -17,6 +27,16 @@
         transition: background-color .5s linear;
     }
 
+    .DebugBlock {
+        position: absolute;
+        right: 20px;
+        bottom: 40px;
+        width: 40%;
+        height: 50%;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: #ccc;
+    }
+
     .BlackBackground {
         background-color: #000;
     }
@@ -24,9 +44,24 @@
 
 <template>
     <div>
-        <div id="photo" v-bind:style="PhotoStyle">{{debug}}
+        <div id="photo" v-bind:style="PhotoSlideStyle" class="PhotoStyle"></div>
+        <div v-bind:class="{PhotoOverlayBase: true, BlackBackground: isBlackBackground}">
+                <v-btn slot="activator" @click="isShowMenu = true" flat icon color="pink" style="position: absolute; right: 10px; top: 10px">
+                    <v-icon>favorite</v-icon>
+                </v-btn>
+            <v-menu offset-y absolute bottom right v-model="isShowMenu">
+                <v-list>
+                    <v-list-tile>
+                        <v-list-tile-title>Title</v-list-tile-title>
+                    </v-list-tile>
+                </v-list>
+            </v-menu>
+                <v-btn flat icon color="pink" style="position: absolute; right: 10px; bottom: 10px">
+                    <v-icon>add</v-icon>
+                </v-btn>
         </div>
-        <div v-bind:class="{PhotoOverlayBase: true, BlackBackground: isBlackBackground}">Overlay
+        <div class="DebugBlock">
+            <div v-for="msg in DebugMessages" style="white-space:nowrap; overflow: hidden">{{msg}}</div>
         </div>
     </div>
 </template>
@@ -40,33 +75,25 @@
         props: ['AlbumId'],
         data() {
             return {
-                once: true,
                 message: '',
                 photos: [],
-                MaxPhotoCount: 20,
-                debug: '',
-                DebugCount: 3,
+                MaxDebugMessages: 10,
+                DebugMessages: [],
+                MaxPhotoCount: 100,
                 CurrentPhotoIdx: 0,
-                PhotoStyle: {
-                    backgroundColor: '#c0c',
-                    backgroundSize: 'cover',
-                    left: 0,
-                    right: 0,
-                    top: 0,
-                    bottom: 0,
-                    position: 'absolute'
-                },
+                PhotoSlideStyle: {},
+                isShowMenu: false,
                 isBlackBackground: true
             }
         },
         beforeRouteLeave(to, from, next) {
-            console.log('photos.beforeRouteLeave()');
+            this.debug('photos.beforeRouteLeave()');
             // approve the route out
             next();
         },
         beforeMount() {
             // sanity checks
-            console.log('event: photos.beforeMount');
+            this.debug('event: photos.beforeMount');
             if (!window.FbAccount) {
                 this.$store.commit('setDebugMessage', 'ERROR: window.FbAccount is falsey');
                 this.$router.push('login');
@@ -86,11 +113,14 @@
         },
         mounted: function () {
             this.$store.commit('setAppbar', false);
-            this.loadFbPhotos();
-            if (this.once) {
-                this.once = false;
-                document.getElementById('photo').addEventListener('transitionend', this.onTransitionEnd);
+            this.$store.commit('showFooter', false);
+            var PhotoEl = document.getElementById('photo');
+            if (PhotoEl) {
+                // remove prior listeners on #photo
+                console.log('photos.removeEventListener: %s', PhotoEl.removeEventListener('transitionend', this.onTransitionEnd));
+                PhotoEl.addEventListener('transitionend', this.onTransitionEnd);
             }
+            this.loadFbPhotos();
         },
         updated: function () {
             console.log('photos.updated()');
@@ -115,67 +145,73 @@
                 );
             },
             onTransitionEnd(evt) {
-                console.log('photos.onTransitionEnd');
+                this.debug('photos.onTransitionEnd');
+
                 // set next photo index
                 if (this.CurrentPhotoIdx == this.photos.length - 1) {
                     this.CurrentPhotoIdx = 0;
                 } else
                     this.CurrentPhotoIdx++;
 
-                // fade 2 black
-                this.isBlackBackground = true;
+                // wait a while
                 var self = this;
                 setTimeout(() => {
-                    self.PhotoStyle = {
-                        backgroundColor: '#c0c',
-                        backgroundSize: 'cover',
-                        left: 0,
-                        right: 0,
-                        top: 0,
-                        bottom: 0,
-                        position: 'absolute'
-                    };
-                    self.showPhoto();
-                }, 2 * 1000);
-                // this.PhotoStyle.transition = 'none';
-                // this.PhotoStyle.backgroundPosition = '0px 0px';
-                // delete this.PhotoStyle.backgroundImage;
-                console.log('photos.onTransitionEnd end');
-                //this.$forceUpdate();
-                // this.showPhoto();
+                    // fade 2 black
+                    this.isBlackBackground = true;
+                    setTimeout(() => {
+                        // reset background image position
+                        self.PhotoSlideStyle = {};
+                        self.showPhoto();
+                    }, 2 * 1000);
+                }, 1 * 1000);
+            },
+            debug(msg) {
+                this.DebugMessages.push(msg);
+                console.log('Debug: %s', msg);
+                if (this.DebugMessages.length > this.MaxDebugMessages) {
+                    this.DebugMessages.shift();
+                }
             },
             reallyShowPhoto() {
-                if (this.DebugCount) {
-                    this.DebugCount--;
-
-                    // load image into display block
-                    var CurrentPhoto = this.photos[this.CurrentPhotoIdx].images[0];
-                    console.log('index: %d, %s', this.CurrentPhotoIdx, CurrentPhoto.source);
-                    this.PhotoStyle.backgroundImage = 'url(\'' + CurrentPhoto.source + '\')';
-
-                    // unhide display block
-                    this.isBlackBackground = false;
-
-                    var self = this;
-                    setTimeout(() => {
-                        // calculate sliding action
-                        var ParentAspectRatio = this.getWidth() / this.getHeight();
-                        var PhotoAspectRatio = CurrentPhoto.width / CurrentPhoto.height;
-                        self.debug = 'Parent aspect ratio: ' + ParentAspectRatio + '<br/>' +
-                            'photo aspect ratio: ' + PhotoAspectRatio;
-
-                        if (PhotoAspectRatio < ParentAspectRatio) {
-                            // scroll vertical
-                            self.PhotoStyle.transition = 'background-position 5s linear';
-                            var ScrollHeight = parseInt(self.getWidth() / CurrentPhoto.width * CurrentPhoto.height) -
-                                self.getHeight();
-                            console.log('Scroll down %d px', ScrollHeight);
-                            self.PhotoStyle.backgroundPosition = '0px -' + ScrollHeight + 'px';
-                        } else {
-                            // scroll horizontal
-                        }
-                    }, 1 * 500);
+                // load image into display block
+                var CurrentPhoto = this.photos[this.CurrentPhotoIdx].images[0];
+                this.debug('index: ' + this.CurrentPhotoIdx + ', ' + CurrentPhoto.source);
+                this.PhotoSlideStyle = {
+                    backgroundImage: 'url(\'' + CurrentPhoto.source + '\')'
                 }
+
+                // unhide display block
+                this.isBlackBackground = false;
+
+                var self = this;
+                setTimeout(() => {
+                    // calculate sliding action
+                    var ParentAspectRatio = this.getWidth() / this.getHeight();
+                    var PhotoAspectRatio = CurrentPhoto.width / CurrentPhoto.height;
+                    self.debug('Parent aspect ratio: ' + ParentAspectRatio + '<br/>' +
+                        'photo aspect ratio: ' + PhotoAspectRatio);
+
+                    if (PhotoAspectRatio < ParentAspectRatio) {
+                        // scroll vertical
+                        var ScrollHeight = -1 * (parseInt(self.getWidth() / CurrentPhoto.width * CurrentPhoto.height) -
+                            self.getHeight());
+                        self.debug('Scroll down ' + ScrollHeight + ' px');
+                        self.PhotoSlideStyle = {
+                            backgroundImage: 'url(\'' + CurrentPhoto.source + '\')',
+                            transition: 'background-position-y 5s linear',
+                            backgroundPositionY: ScrollHeight + 'px'
+                        };
+                    } else {
+                        // scroll horizontal
+                        var ScrollWidth = -1 * (parseInt(CurrentPhoto.width / CurrentPhoto.height * self.getHeight()) -
+                            self.getWidth());
+                        self.debug('Scroll right ' + ScrollWidth + ' px');
+                        self.PhotoSlideStyle = {
+                            transition: 'background-position-x 5s linear',
+                            backgroundPositionY: ScrollWidth + 'px'
+                        };
+                    }
+                }, 1 * 500);
             },
             showPhoto() {
                 // reset image position
@@ -184,18 +220,18 @@
                 var image = document.createElement('img');
                 var self = this;
                 image.addEventListener('load', (evt) => {
-                    console.log('Image loaded');
+                    self.debug('Image loaded');
                     image.remove();
                     self.reallyShowPhoto();
                 });
 
                 // load image
                 var CurrentPhoto = this.photos[this.CurrentPhotoIdx].images[0];
-                console.log('Loading %d:%s...', this.CurrentPhotoIdx, CurrentPhoto.source);
+                this.debug('Loading ' + this.CurrentPhotoIdx + ':' + CurrentPhoto.source + '...');
                 image.src = CurrentPhoto.source;
             },
             loadFbPhotos: function (url) {
-                console.log('photos.loadFbPhotos()');
+                this.debug('photos.loadFbPhotos()');
                 this.$store.commit('setDebugMessage', 'Loading photo meta data...');
                 var self = this;
                 const GetLimit = 5;
@@ -225,13 +261,16 @@
                                 return -1;
                             return 0;
                         });
-                        if (self.photos.length < self.MaxPhotoCount && resp.paging && resp.paging.next) {
+                        if (self.photos.length < self.MaxPhotoCount &&
+                            resp.paging &&
+                            resp.paging.next) {
                             // load next page of photo meta data
-                            self.CurrentPhotoIdx = 0;
+                            self.debug('Load next page of photo meta data');
                             self.loadFbPhotos(resp.paging.next);
                         } else {
                             // load the first photo
-                            self.$store.commit('setDebugMessage', 'Photo meta data loaded');
+                            self.$store.commit('setDebugMessage', self.photos.length +
+                                ' photo meta records loaded');
                             self.showPhoto();
                         }
                     }
