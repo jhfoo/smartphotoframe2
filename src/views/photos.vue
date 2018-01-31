@@ -27,18 +27,14 @@
         transition: background-color .5s linear;
     }
 
-    .DebugBlock {
-        position: absolute;
-        right: 20px;
-        bottom: 40px;
-        width: 40%;
-        height: 50%;
-        background-color: rgba(0, 0, 0, 0.5);
-        color: #ccc;
-    }
-
     .BlackBackground {
         background-color: #000;
+    }
+
+    .MiniMenu {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
     }
 </style>
 
@@ -46,28 +42,55 @@
     <div>
         <div id="photo" v-bind:style="PhotoSlideStyle" class="PhotoStyle"></div>
         <div v-bind:class="{PhotoOverlayBase: true, BlackBackground: isBlackBackground}">
-                <v-btn slot="activator" @click="isShowMenu = true" flat icon color="pink" style="position: absolute; right: 10px; top: 10px">
-                    <v-icon>favorite</v-icon>
+            <v-menu offset-y class="MiniMenu">
+                <v-btn slot="activator" @click="isShowMenu = true" flat icon color="pink" style="">
+                    <v-icon>favorite_border</v-icon>
                 </v-btn>
-            <v-menu offset-y absolute bottom right v-model="isShowMenu">
                 <v-list>
-                    <v-list-tile>
-                        <v-list-tile-title>Title</v-list-tile-title>
+                    <v-subheader>Options</v-subheader>
+                    <v-list-tile @click="$router.push('albums')">
+                        <v-list-tile-action>
+                            <v-icon color="pink">help</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-title>About</v-list-tile-title>
+                    </v-list-tile>
+                    <v-list-tile @click="onToggleFullscreen()">
+                        <v-list-tile-action>
+                            <v-icon color="pink">check_box</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-title>Toggle Fullscreen</v-list-tile-title>
+                    </v-list-tile>
+                    <v-list-tile @click="$router.push('albums')">
+                        <v-list-tile-action>
+                            <v-icon color="pink">perm_media</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-title>Albums</v-list-tile-title>
+                    </v-list-tile>
+                    <v-divider></v-divider>
+                    <v-list-tile @click="toggleDebugWindow()">
+                        <v-list-tile-action>
+                            <v-icon color="pink">check_box</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-title>Toggle Debug Mode</v-list-tile-title>
+                    </v-list-tile>
+                    <v-divider></v-divider>
+                    <v-list-tile @click="$router.push('login')">
+                        <v-list-tile-action>
+                            <v-icon color="pink">power_settings_new</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-title>Log Off</v-list-tile-title>
                     </v-list-tile>
                 </v-list>
             </v-menu>
-                <v-btn flat icon color="pink" style="position: absolute; right: 10px; bottom: 10px">
-                    <v-icon>add</v-icon>
-                </v-btn>
-        </div>
-        <div class="DebugBlock">
-            <div v-for="msg in DebugMessages" style="white-space:nowrap; overflow: hidden">{{msg}}</div>
         </div>
     </div>
 </template>
 
 <script>
     import moment from 'moment';
+    import {
+        mapMutations
+    } from 'vuex';
 
     export default {
         name: 'Photos',
@@ -77,7 +100,6 @@
             return {
                 message: '',
                 photos: [],
-                MaxDebugMessages: 10,
                 DebugMessages: [],
                 MaxPhotoCount: 100,
                 CurrentPhotoIdx: 0,
@@ -87,13 +109,13 @@
             }
         },
         beforeRouteLeave(to, from, next) {
-            this.debug('photos.beforeRouteLeave()');
+            this.addDebugMessage('photos.beforeRouteLeave()');
             // approve the route out
             next();
         },
         beforeMount() {
             // sanity checks
-            this.debug('event: photos.beforeMount');
+            this.addDebugMessage('event: photos.beforeMount');
             if (!window.FbAccount) {
                 this.$store.commit('setDebugMessage', 'ERROR: window.FbAccount is falsey');
                 this.$router.push('login');
@@ -126,6 +148,7 @@
             console.log('photos.updated()');
         },
         methods: {
+            ...mapMutations(['addDebugMessage', 'toggleDebugWindow']),
             getWidth() {
                 return Math.max(
                     document.body.scrollWidth,
@@ -144,8 +167,25 @@
                     document.documentElement.clientHeight
                 );
             },
+            onToggleFullscreen() {
+                if (navigator.userAgent.indexOf('Firefox') > -1)
+                    // Firefox handling
+                    if (document.mozFullScreen)
+                        document.mozCancelFullScreen();
+                    else
+                        document.documentElement.mozRequestFullScreen();
+                else if (navigator.userAgent.indexOf('Chrome') > -1)
+                    // Chrome handling
+                    if (document.webkitFullscreenElement)
+                        document.webkitExitFullscreen();
+                    else
+                        document.body.webkitRequestFullScreen();
+                else
+                    // Unsupported browsers
+                    this.addDebugMessage('Unsupported browser');
+            },
             onTransitionEnd(evt) {
-                this.debug('photos.onTransitionEnd');
+                this.addDebugMessage('photos.onTransitionEnd');
 
                 // set next photo index
                 if (this.CurrentPhotoIdx == this.photos.length - 1) {
@@ -165,17 +205,17 @@
                     }, 2 * 1000);
                 }, 1 * 1000);
             },
-            debug(msg) {
-                this.DebugMessages.push(msg);
-                console.log('Debug: %s', msg);
-                if (this.DebugMessages.length > this.MaxDebugMessages) {
-                    this.DebugMessages.shift();
+            getUid(MaxLength) {
+                var ret = '';
+                for (var i = 0; i < MaxLength; i++) {
+                    ret += Math.floor(Math.random() * 10);
                 }
+                return ret;
             },
             reallyShowPhoto() {
                 // load image into display block
                 var CurrentPhoto = this.photos[this.CurrentPhotoIdx].images[0];
-                this.debug('index: ' + this.CurrentPhotoIdx + ', ' + CurrentPhoto.source);
+                this.addDebugMessage('index: ' + this.CurrentPhotoIdx + ', ' + CurrentPhoto.source);
                 this.PhotoSlideStyle = {
                     backgroundImage: 'url(\'' + CurrentPhoto.source + '\')'
                 }
@@ -188,14 +228,14 @@
                     // calculate sliding action
                     var ParentAspectRatio = this.getWidth() / this.getHeight();
                     var PhotoAspectRatio = CurrentPhoto.width / CurrentPhoto.height;
-                    self.debug('Parent aspect ratio: ' + ParentAspectRatio + '<br/>' +
+                    self.addDebugMessage('Parent aspect ratio: ' + ParentAspectRatio + '<br/>' +
                         'photo aspect ratio: ' + PhotoAspectRatio);
 
                     if (PhotoAspectRatio < ParentAspectRatio) {
                         // scroll vertical
                         var ScrollHeight = -1 * (parseInt(self.getWidth() / CurrentPhoto.width * CurrentPhoto.height) -
                             self.getHeight());
-                        self.debug('Scroll down ' + ScrollHeight + ' px');
+                        self.addDebugMessage('Scroll down ' + ScrollHeight + ' px');
                         self.PhotoSlideStyle = {
                             backgroundImage: 'url(\'' + CurrentPhoto.source + '\')',
                             transition: 'background-position-y 5s linear',
@@ -205,10 +245,11 @@
                         // scroll horizontal
                         var ScrollWidth = -1 * (parseInt(CurrentPhoto.width / CurrentPhoto.height * self.getHeight()) -
                             self.getWidth());
-                        self.debug('Scroll right ' + ScrollWidth + ' px');
+                        self.addDebugMessage('Scroll right ' + ScrollWidth + ' px');
                         self.PhotoSlideStyle = {
+                            backgroundImage: 'url(\'' + CurrentPhoto.source + '\')',
                             transition: 'background-position-x 5s linear',
-                            backgroundPositionY: ScrollWidth + 'px'
+                            backgroundPositionX: ScrollWidth + 'px'
                         };
                     }
                 }, 1 * 500);
@@ -220,18 +261,18 @@
                 var image = document.createElement('img');
                 var self = this;
                 image.addEventListener('load', (evt) => {
-                    self.debug('Image loaded');
+                    self.addDebugMessage('Image loaded');
                     image.remove();
                     self.reallyShowPhoto();
                 });
 
                 // load image
                 var CurrentPhoto = this.photos[this.CurrentPhotoIdx].images[0];
-                this.debug('Loading ' + this.CurrentPhotoIdx + ':' + CurrentPhoto.source + '...');
+                this.addDebugMessage('Loading ' + this.CurrentPhotoIdx + ':' + CurrentPhoto.source + '...');
                 image.src = CurrentPhoto.source;
             },
             loadFbPhotos: function (url) {
-                this.debug('photos.loadFbPhotos()');
+                this.addDebugMessage('photos.loadFbPhotos()');
                 this.$store.commit('setDebugMessage', 'Loading photo meta data...');
                 var self = this;
                 const GetLimit = 5;
@@ -242,7 +283,7 @@
                     if (resp.error) {
                         console.error('error in response: ', resp.error);
                         if (resp.error.message)
-                            this.$store.commit('setDebugMessage', 'ERROR: ' + resp.message);
+                            self.$store.commit('setDebugMessage', 'ERROR: ' + resp.message);
                         // try logging in again
                         self.$router.push('login');
                     } else {
@@ -253,6 +294,7 @@
                             item.CreatedDateTime = moment(item.created_time).format('D MMM, YYYY');
                             item.CreatedDateTimeUnix = moment(item.created_time).unix();
                         });
+
                         // sort by photo.created_time desc
                         self.photos = self.photos.concat(resp.data).sort((a, b) => {
                             if (a.CreatedDateTimeUnix < b.CreatedDateTimeUnix)
@@ -261,11 +303,12 @@
                                 return -1;
                             return 0;
                         });
+
                         if (self.photos.length < self.MaxPhotoCount &&
                             resp.paging &&
                             resp.paging.next) {
                             // load next page of photo meta data
-                            self.debug('Load next page of photo meta data');
+                            self.addDebugMessage('Load next page of photo meta data');
                             self.loadFbPhotos(resp.paging.next);
                         } else {
                             // load the first photo

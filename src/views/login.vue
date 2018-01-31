@@ -62,7 +62,7 @@
             }
         },
         mounted: function () {
-            console.log('event: login.mounted');
+            this.$store.commit('addDebugMessage', 'event: login.mounted');
             this.$store.commit('setAppbar',true);
             if (!window.FbAccount) {
                 // get Fb login status if not registered in window

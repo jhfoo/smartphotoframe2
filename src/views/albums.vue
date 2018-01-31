@@ -56,6 +56,8 @@
             }
         },
         mounted: function () {
+            this.$store.commit('setAppbar', true);
+            this.$store.commit('showFooter', true);
             this.loadFbAlbums();
         },
         methods: {

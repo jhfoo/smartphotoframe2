@@ -13,10 +13,16 @@ export default new Vuex.Store({
         footer: {
             isShow: true
         },
+        debug: {
+            isShow: true,
+            MaxMessages: 10,
+            messages: []
+        },
         DebugMessage: '',
         AppTitle: 'Woohoo',
         version: '[AIV]{version}[/AIV]'
     },
+
     mutations: {
         setLeftDrawer(state, isShow) {
             isShow = isShow ? isShow : false;
@@ -31,6 +37,26 @@ export default new Vuex.Store({
             console.log('store.showfooter: ', isShow);
             isShow = isShow ? isShow : false;
             state.footer.isShow = isShow;
+        },
+        toggleDebugWindow(state) {
+            state.debug.isShow = !state.debug.isShow;
+        },
+        addDebugMessage(state, NewMsg) {
+            console.log('Debug: ' + NewMsg);
+            var rec = {
+                msg: NewMsg,
+                // create random id
+                id: (function (MaxLength) {
+                    var ret = '';
+                    for (var i = 0; i < MaxLength; i++) {
+                        ret += Math.floor(Math.random() * 10);
+                    }
+                    return ret;
+                })(6)
+            }
+            state.debug.messages.push(rec);
+            if (state.debug.messages.length > state.debug.MaxMessages)
+                state.debug.messages.shift();
         },
         setDebugMessage(state, NewMsg) {
             NewMsg = NewMsg ? NewMsg : '';

@@ -29,18 +29,19 @@
 
         <Appbar></Appbar>
         <router-view></router-view>
-
         <Footer></Footer>
+        <DebugWin></DebugWin>
     </v-app>
 </template>
 
 <script>
     import Appbar from './appbar.vue';
     import Footer from './footer.vue';
+    import DebugWin from './debugwin.vue';
 
     export default {
         components: {
-            Appbar, Footer
+            Appbar, Footer, DebugWin
         },
         computed: {
             getCount: {
