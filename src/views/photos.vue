@@ -23,7 +23,7 @@
         right: 0;
         top: 0;
         bottom: 0;
-        backgroundColor: rgba(0, 0, 0, 0);
+        background-color: rgba(0, 0, 0, 0);
         transition: background-color .5s linear;
     }
 
@@ -60,7 +60,7 @@
                         </v-list-tile-action>
                         <v-list-tile-title>Toggle Fullscreen</v-list-tile-title>
                     </v-list-tile>
-                    <v-list-tile @click="$router.push('albums')">
+                    <v-list-tile @click="$router.back()">
                         <v-list-tile-action>
                             <v-icon color="pink">perm_media</v-icon>
                         </v-list-tile-action>

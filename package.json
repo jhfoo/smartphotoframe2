@@ -1,6 +1,6 @@
 {
     "name": "smartphotoframe2",
-    "version": "1.0.900",
+    "version": "1.1.20",
     "description": "",
     "main": "index.js",
     "scripts": {
@@ -37,11 +37,6 @@
         "webpack-auto-inject-version": "^1.0.0",
         "webpack-bundle-analyzer": "^2.9.1",
         "webpack-dev-server": "^2.9.7"
-    },
-    "bbabel": {
-        "plugins": [
-            "transform-object-rest-spread"
-        ]
     },
     "bugs": {
         "url": "https://github.com/jhfoo/smartphotoframe2/issues"

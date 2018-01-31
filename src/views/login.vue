@@ -38,7 +38,7 @@
                             <v-spacer></v-spacer>
                             <v-btn @click.stop="onFbLogin" flat color="orange">
                                 <v-icon>account_box</v-icon> Log in to Facebook</v-btn>
-                            <v-btn flat color="orange">About</v-btn>
+                            <v-btn @click="$router.push('about')" flat color="orange">About</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-layout>
