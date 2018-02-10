@@ -7,6 +7,8 @@ The following are new from SMARTPhotoFrame:
 - Material UI (via Vuetify): moving away from Semantic UI (also a good UI framework, but starting show its age) 
 - Auto Facebook login: intent is for frequent users to load their last selected album with minimal friction
 - Debug mode: toggle-able mode to see loads of developer garbage for curious
+- Preference: in-browser storage of display behavior
+- Auto full screen: browser goes full-screen before photo display begins
 
 ## Key tech stack
 - [Vue](https://github.com/vuejs/vue)
