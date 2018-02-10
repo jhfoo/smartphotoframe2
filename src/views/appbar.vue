@@ -1,45 +1,121 @@
 <style>
-
 </style>
 
 <template>
-    <v-toolbar v-if="isShow" fixed app :clipped-left="clipped">
-        <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-        <v-btn icon @click.stop="$store.commit('setLeftDrawer',true)">
-            <v-icon>web</v-icon>
-        </v-btn>
-        <v-btn icon @click.stop="clipped = !clipped">
-            <v-icon>web</v-icon>
-        </v-btn>
-        <v-btn icon @click.stop="fixed = !fixed">
-            <v-icon>remove</v-icon>
-        </v-btn>
+    <v-toolbar v-if="isShow" fixed app>
         <v-toolbar-title v-text="title"></v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn icon @click.stop="rightDrawer = !rightDrawer">
-            <v-icon>more_vert</v-icon>
-        </v-btn>
+        <v-menu offset-y class="MiniMenu">
+            <v-btn slot="activator" flat icon style="">
+                <v-icon>more_vert</v-icon>
+            </v-btn>
+            <v-list>
+                <v-subheader>Options</v-subheader>
+                <v-list-tile @click="$router.push('about')">
+                    <v-list-tile-action>
+                        <v-icon color="pink">help</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-title>About</v-list-tile-title>
+                </v-list-tile>
+                <v-list-tile @click="onToggleFullscreen()">
+                    <v-list-tile-action>
+                        <v-icon color="pink">check_box</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-title>Toggle Fullscreen</v-list-tile-title>
+                </v-list-tile>
+                <v-list-tile @click="$router.back()">
+                    <v-list-tile-action>
+                        <v-icon color="pink">perm_media</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-title>Albums</v-list-tile-title>
+                </v-list-tile>
+                <v-divider></v-divider>
+                <v-list-tile @click="toggleAutoLogin()">
+                    <v-list-tile-action>
+                        <v-switch v-model="AutoLoginStatus"></v-switch>
+                    </v-list-tile-action>
+                    <v-list-tile-title>Toggle Auto Login</v-list-tile-title>
+                </v-list-tile>
+                <v-list-tile @click="toggleDebugWindow()">
+                    <v-list-tile-action>
+                        <v-switch v-model="DebugWinStatus"></v-switch>
+                    </v-list-tile-action>
+                    <v-list-tile-title>Toggle Debug Mode</v-list-tile-title>
+                </v-list-tile>
+                <v-divider></v-divider>
+                <v-list-tile @click="onLogout()">
+                    <v-list-tile-action>
+                        <v-icon color="pink">power_settings_new</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-title>Log Off</v-list-tile-title>
+                </v-list-tile>
+            </v-list>
+        </v-menu>
     </v-toolbar>
 </template>
 
 <script>
+    import {
+        mapMutations, mapGetters
+    } from 'vuex';
+
     export default {
         data() {
             return {
-                clipped: false,
-                drawer: true,
-                fixed: false,
-                items: [{
-                    icon: 'bubble_chart',
-                    title: 'Inspire'
-                }],
-                title: 'SMARTPhotoFrame 2'
+                title: 'SMARTPhotoFrame'
             }
         },
         computed: {
-            isShow: function() {
+            DebugWinStatus: {
+                get: function() {
+                    console.log('DebugWinStatus.GET');
+                    return this.isShowDebugWin();
+                },
+                set: function(NewValue) {
+                    // console.log('DebugWinStatus.SET');
+                    // this.toggleDebugWindow();
+                }
+            },
+            AutoLoginStatus: {
+                get: function() {
+                    return this.isAutoLogin();
+                },
+                set: function(NewValue) {
+
+                }
+            },
+            isShow() {
                 console.log('appbar.isShow:', this.$store.state.Appbar.isShow);
                 return this.$store.state.Appbar.isShow;
+            }
+        },
+        methods: {
+            ...mapMutations(['addDebugMessage', 'addErrorMessage', 'toggleDebugWindow', 'toggleAutoLogin']),
+            ...mapGetters(['isShowDebugWin', 'isAutoLogin']),
+            onLogout() {
+                this.$router.push({
+                    name: 'login',
+                    params: {
+                        isLogout: true
+                    }
+                })
+            },
+            onToggleFullscreen() {
+                if (navigator.userAgent.indexOf('Firefox') > -1)
+                    // Firefox handling
+                    if (document.mozFullScreen)
+                        document.mozCancelFullScreen();
+                    else
+                        document.documentElement.mozRequestFullScreen();
+                else if (navigator.userAgent.indexOf('Chrome') > -1)
+                    // Chrome handling
+                    if (document.webkitFullscreenElement)
+                        document.webkitExitFullscreen();
+                    else
+                        document.body.webkitRequestFullScreen();
+                else
+                    // Unsupported browsers
+                    this.addDebugMessage('Unsupported browser');
             }
         }
     }

@@ -48,7 +48,7 @@
                 </v-btn>
                 <v-list>
                     <v-subheader>Options</v-subheader>
-                    <v-list-tile @click="$router.push('albums')">
+                    <v-list-tile @click="$router.push('about')">
                         <v-list-tile-action>
                             <v-icon color="pink">help</v-icon>
                         </v-list-tile-action>
@@ -134,8 +134,10 @@
             });
         },
         mounted: function () {
+            // hide header and footer
             this.$store.commit('setAppbar', false);
             this.$store.commit('showFooter', false);
+            
             var PhotoEl = document.getElementById('photo');
             if (PhotoEl) {
                 // remove prior listeners on #photo
@@ -148,7 +150,7 @@
             console.log('photos.updated()');
         },
         methods: {
-            ...mapMutations(['addDebugMessage', 'toggleDebugWindow']),
+            ...mapMutations(['addDebugMessage', 'addErrorMessage', 'toggleDebugWindow']),
             getWidth() {
                 return Math.max(
                     document.body.scrollWidth,
@@ -283,7 +285,7 @@
                     if (resp.error) {
                         console.error('error in response: ', resp.error);
                         if (resp.error.message)
-                            self.$store.commit('setDebugMessage', 'ERROR: ' + resp.message);
+                            self.addErrorMessage( 'ERROR: ' + resp.message);
                         // try logging in again
                         self.$router.push('login');
                     } else {

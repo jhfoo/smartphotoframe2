@@ -18,12 +18,31 @@ export default new Vuex.Store({
             MaxMessages: 10,
             messages: []
         },
+        hasLocalStorage: false,
+        isAutoLogin: true,
+        isAutoFullscreen: true,
         DebugMessage: '',
         AppTitle: 'Woohoo',
         version: '[AIV]{version}[/AIV]'
     },
-
+    getters: {
+        isShowDebugWin(state) {
+            return state.debug.isShow;
+        },
+        isAutoLogin(state) {
+            return state.isAutoLogin;
+        }
+    },
     mutations: {
+        setConfig(state, NewConfig) {
+            NewConfig = JSON.parse(NewConfig);
+            state.isAutoLogin = NewConfig.isAutoLogin;
+            state.debug.isShow = NewConfig.isShowDebugWin;
+            state.hasLocalStorage = true;
+        },
+        isAutoUpdateLocalStore(state, NewValue) {
+            state.isAutoUpdateLocalStore = NewValue;
+        },
         setLeftDrawer(state, isShow) {
             isShow = isShow ? isShow : false;
             state.LeftDrawer.isShow = isShow;
@@ -38,13 +57,43 @@ export default new Vuex.Store({
             isShow = isShow ? isShow : false;
             state.footer.isShow = isShow;
         },
+        toggleAutoLogin(state) {
+            state.isAutoLogin = !state.isAutoLogin;
+            window.localStorage.setItem('config', JSON.stringify({
+                isAutoLogin: state.isAutoLogin,
+                isShowDebugWin: state.debug.isShow
+            }));
+        },
         toggleDebugWindow(state) {
             state.debug.isShow = !state.debug.isShow;
+            window.localStorage.setItem('config', JSON.stringify({
+                isAutoLogin: state.isAutoLogin,
+                isShowDebugWin: state.debug.isShow
+            }));
         },
         addDebugMessage(state, NewMsg) {
             console.log('Debug: ' + NewMsg);
             var rec = {
                 msg: NewMsg,
+                type:'debug',
+                // create random id
+                id: (function (MaxLength) {
+                    var ret = '';
+                    for (var i = 0; i < MaxLength; i++) {
+                        ret += Math.floor(Math.random() * 10);
+                    }
+                    return ret;
+                })(6)
+            }
+            state.debug.messages.push(rec);
+            if (state.debug.messages.length > state.debug.MaxMessages)
+                state.debug.messages.shift();
+        },
+        addErrorMessage(state, NewMsg) {
+            console.error(NewMsg);
+            var rec = {
+                msg: NewMsg,
+                type:'error',
                 // create random id
                 id: (function (MaxLength) {
                     var ret = '';

@@ -1,6 +1,7 @@
 <template>
     <v-footer v-if="isShow" :fixed="true" app>
-         {{getDebugMessage}}<v-spacer></v-spacer>
+         <span style="padding-left:5px">{{getDebugMessage}}</span>
+         <v-spacer></v-spacer>
          <span>Version {{$store.state.version}}</span>
     </v-footer>
 </template>

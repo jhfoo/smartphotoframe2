@@ -9,6 +9,6 @@ The following are new from SMARTPhotoFrame:
 - Debug mode: toggle-able mode to see loads of developer garbage for curious
 
 ## Key tech stack
-- Vue
-- Vuetify
-- Webpack
+- [Vue](https://github.com/vuejs/vue)
+- [Vuetify](https://github.com/vuetifyjs/vuetify)
+- [Webpack](https://github.com/webpack/webpack)

@@ -10,10 +10,12 @@
         <v-container fluid>
             <v-slide-y-transition mode="out-in">
                 <v-layout column align-center>
-                    <v-card v-if="isLoggedIn()" class="LoginCard">
-                        <v-card-title primary-title>
-                            <h3 class="headline mb-0">Hello {{getFbAccountLastName()}}!</h3>
-                        </v-card-title>
+                    <v-card v-if="isStatusLoggedIn" class="LoginCard">
+                        <v-card-media class="white--text" height="200px" src="/images/card-login.jpg">
+                            <v-card-title primary-title>
+                                <h3 class="headline mb-0">Hello {{getFbAccountLastName()}}!</h3>
+                            </v-card-title>
+                        </v-card-media>
                         <v-card-text>
                             You are logged into Facebook. You will be redirected
                             <br/> to select your albums in {{TimerCountdown}}secs.
@@ -26,10 +28,46 @@
                                 <v-icon>exit_to_app</v-icon> Log off Facebook</v-btn>
                         </v-card-actions>
                     </v-card>
-                    <v-card v-else class="LoginCard demo-card-event mdl-card mdl-shadow--2dp">
-                        <v-card-title primary-title>
-                            <h3 class="headline mb-0">See You Soon</h3>
-                        </v-card-title>
+                    <v-card v-if="isStatusLoginReady" class="LoginCard">
+                        <v-card-media class="white--text" height="200px" src="/images/card-login.jpg">
+                            <v-card-title primary-title>
+                                <h3 class="headline mb-0">Welcome!</h3>
+                            </v-card-title>
+                        </v-card-media>
+                        <v-card-text>
+                            <div>To proceed, please log into your Facebook account by
+                                <br/> selecting the Log In button below.</div>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn @click.stop="onFbLogin" flat color="orange">
+                                <v-icon>account_box</v-icon> Log in to Facebook</v-btn>
+                            <v-btn @click="$router.push('about')" flat color="orange">About</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                    <v-card v-if="isStatusLoggingIn" class="LoginCard demo-card-event mdl-card mdl-shadow--2dp">
+                        <v-card-media class="white--text" height="200px" src="/images/card-logout.jpg">
+                            <v-card-title primary-title>
+                                <h3 class="headline mb-0">See You Soon</h3>
+                            </v-card-title>
+                        </v-card-media>
+                        <v-card-text>
+                            <div>To proceed, please log into your Facebook account by
+                                <br/> selecting the Log In button below.</div>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn @click.stop="onFbLogin" flat color="orange">
+                                <v-icon>account_box</v-icon> Log in to Facebook</v-btn>
+                            <v-btn @click="$router.push('about')" flat color="orange">About</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                    <v-card v-if="isStatusLoggedOut" class="LoginCard demo-card-event mdl-card mdl-shadow--2dp">
+                        <v-card-media class="white--text" height="200px" src="/images/card-logout.jpg">
+                            <v-card-title primary-title>
+                                <h3 class="headline mb-0">See You Soon</h3>
+                            </v-card-title>
+                        </v-card-media>
                         <v-card-text>
                             <div>To proceed, please log into your Facebook account by
                                 <br/> selecting the Log In button below.</div>
@@ -48,28 +86,62 @@
 </template>
 
 <script>
+    import {
+        mapMutations
+    } from 'vuex';
+
+    const STATUS_LOGIN_READY = 'LOGIN_READY',
+        STATUS_LOGGED_OUT = 'LOGGED_OUT',
+        STATUS_LOGGING_OUT = 'LOGGING_OUT',
+        STATUS_LOGGING_IN = 'LOGGING_IN',
+        STATUS_LOGGED_IN = 'LOGGED_IN';
+
     export default {
         name: 'Login',
         components: {},
-        // props: ['FbResponse'],
+        props: ['isLogout'],
         data() {
             return {
                 message: '',
                 items: [],
+                status: STATUS_LOGIN_READY,
                 RedirectTimer: null,
-                TimerCountdown: 5,
-                isAutoLogin: true
+                TimerCountdown: 5
+            }
+        },
+        computed: {
+            isStatusLoggedIn() {
+                return this.status === STATUS_LOGGED_IN;
+            },
+            isStatusLoggedOut() {
+                return this.status === STATUS_LOGGED_OUT;
+            },
+            isStatusLoginReady() {
+                return this.status === STATUS_LOGIN_READY;
+            },
+            isStatusLoggingIn() {
+                return this.status === STATUS_LOGGING_IN;
             }
         },
         mounted: function () {
-            this.$store.commit('addDebugMessage', 'event: login.mounted');
-            this.$store.commit('setAppbar',true);
+            this.addDebugMessage('event: login.mounted');
+
+            this.$store.commit('setAppbar', true);
+            if (this.isLogout) {
+                // note: auto login will not kick in
+                this.addDebugMessage('Logging out...');
+                this.status = STATUS_LOGGING_OUT;
+                this.onFbLogout();
+            } else
             if (!window.FbAccount) {
                 // get Fb login status if not registered in window
                 FB.getLoginStatus(this.handleFbLoginResponse);
             }
         },
         methods: {
+            ...mapMutations(['addDebugMessage', 'addErrorMessage',
+                'setDebugMessage', 'toggleDebugWindow'
+            ]),
             getFbAccountLastName: function () {
                 return window.FbAccount.LastName;
             },
@@ -79,7 +151,7 @@
                 return window.FbAccount;
             },
             handleFbLoginResponse: function (resp) {
-                console.log(resp);
+                this.addDebugMessage(resp);
                 var self = this;
                 // sanity check on data format
                 if ('authResponse' in resp) {
@@ -89,9 +161,10 @@
                         FB.api('/me', 'get', {
                             fields: 'last_name, first_name'
                         }, function (resp) {
-                            if (!resp && resp.error)
+                            if (!resp && resp.error) {
                                 console.error('error in response: ', resp.error);
-                            else {
+                                windows.FbAccount = null;
+                            } else {
                                 console.log('response: ', resp);
                                 window.FbAccount = {
                                     LastName: resp.last_name,
@@ -113,17 +186,19 @@
                             }
                         });
                     } else {
-                        if (this.isAutoLogin) {
+                        if (this.$store.getters.isAutoLogin) {
+                            this.addDebugMessage('do auto-login...');
                             // only auto login once per page load
                             this.isAutoLogin = false;
                             this.onFbLogin();
                         }
                     }
                 } else {
-                    console.error('Invalid response object received in login.handleFbLoginResponse: ', resp);
+                    this.addErrorMessage('Invalid response object received in login.handleFbLoginResponse: ', resp);
                 }
             },
             onFbLogin: function () {
+                this.setDebugMessage('Connecting to Facebook...');
                 FB.login(this.handleFbLoginResponse, {
                     scope: 'user_photos, public_profile'
                 });
@@ -133,8 +208,12 @@
                 FB.logout(function (response) {
                     // Person is now logged out
                     delete window.FbAccount;
-                    console.log('Logged out');
-                    self.$forceUpdate();
+                    self.addDebugMessage('Logged out');
+                    self.status = STATUS_LOGGED_OUT;
+                    setTimeout(() => {
+                        self.status = STATUS_LOGIN_READY;
+                    }, 5 * 1000);
+                    //self.$forceUpdate();
                 });
             }
         }

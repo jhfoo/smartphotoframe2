@@ -6,27 +6,6 @@
 
 <template>
     <v-app>
-        <v-navigation-drawer fixed :mini-variant="miniVariant" :clipped="clipped" v-model="getCount" app>
-            <v-toolbar flat>
-                <v-list>
-                    <v-list-tile>
-                        <v-list-tile-title class="title">Hello</v-list-tile-title>
-                    </v-list-tile>
-                </v-list>
-            </v-toolbar>
-            <v-divider></v-divider>
-            <v-list>
-                <v-list-tile value="true" v-for="(item, i) in items" :key="i">
-                    <v-list-tile-action>
-                        <v-icon v-html="item.icon"></v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-content>
-                        <v-list-tile-title v-text="item.title"></v-list-tile-title>
-                    </v-list-tile-content>
-                </v-list-tile>
-            </v-list>
-        </v-navigation-drawer>
-
         <Appbar></Appbar>
         <router-view></router-view>
         <Footer></Footer>
@@ -40,6 +19,18 @@
     import DebugWin from './debugwin.vue';
 
     export default {
+        mounted: function() {
+            // load stored preferences if avail
+            if (window.localStorage) {
+                var StoredConfig = window.localStorage.getItem('config');
+                if (StoredConfig) {
+                    console.log(StoredConfig);
+                    this.$store.commit('setConfig', StoredConfig);
+                } else {
+                    console.log('No config stored in browser');
+                }
+            }
+        },
         components: {
             Appbar, Footer, DebugWin
         },

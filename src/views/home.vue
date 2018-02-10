@@ -30,6 +30,9 @@
             }
         },
         methods: {
+            onAdd() {
+                
+            }
         }
     }
 </script>
