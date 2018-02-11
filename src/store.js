@@ -14,7 +14,7 @@ export default new Vuex.Store({
             isShow: true
         },
         debug: {
-            isShow: true,
+            isShow: false,
             MaxMessages: 30,
             messages: []
         },
