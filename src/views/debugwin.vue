@@ -5,8 +5,10 @@
         bottom: 50px;
         width: 40%;
         height: 50%;
-        background-color: rgba(0,0,0, 0.5);
+        background-color: rgba(0, 0, 0, 0.5);
         color: #ccc;
+        overflow-y: scroll;
+        overflow-x: hidden;
     }
 </style>
 
@@ -20,11 +22,9 @@
     export default {
         name: 'DebugWin',
         components: {},
-        mounted() {
-        },
+        mounted() {},
         data() {
-            return {
-            }
+            return {}
         },
         computed: {
             DebugMessages() {
@@ -34,7 +34,6 @@
                 return this.$store.state.debug.isShow;
             }
         },
-        methods: {
-        }
+        methods: {}
     }
 </script>

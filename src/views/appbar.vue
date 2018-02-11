@@ -17,12 +17,6 @@
                     </v-list-tile-action>
                     <v-list-tile-title>About</v-list-tile-title>
                 </v-list-tile>
-                <v-list-tile @click="onToggleFullscreen()">
-                    <v-list-tile-action>
-                        <v-icon color="pink">check_box</v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-title>Toggle Fullscreen</v-list-tile-title>
-                </v-list-tile>
                 <v-list-tile @click="$router.back()">
                     <v-list-tile-action>
                         <v-icon color="pink">perm_media</v-icon>
@@ -30,6 +24,12 @@
                     <v-list-tile-title>Albums</v-list-tile-title>
                 </v-list-tile>
                 <v-divider></v-divider>
+                <v-list-tile @click="toggleFullscreen()">
+                    <v-list-tile-action>
+                        <v-switch v-model="FullscreenStatus"></v-switch>
+                    </v-list-tile-action>
+                    <v-list-tile-title>Toggle Fullscreen</v-list-tile-title>
+                </v-list-tile>
                 <v-list-tile @click="toggleAutoLogin()">
                     <v-list-tile-action>
                         <v-switch v-model="AutoLoginStatus"></v-switch>
@@ -58,17 +58,27 @@
     import {
         mapMutations, mapGetters
     } from 'vuex';
+    import {ScreenToggle} from '../mixins/screentoggle';
 
     export default {
+        mixins:[ScreenToggle],
         data() {
             return {
                 title: 'SMARTPhotoFrame'
             }
         },
         computed: {
+            FullscreenStatus: {
+                get: function() {
+                    console.log ('FullscreenStatus GET');
+                    return this.$store.state.isFullscreen;
+                },
+                set: function(NewValue) {
+                    console.log ('FullscreenStatus SET');
+                }
+            },
             DebugWinStatus: {
                 get: function() {
-                    console.log('DebugWinStatus.GET');
                     return this.isShowDebugWin();
                 },
                 set: function(NewValue) {
@@ -90,7 +100,8 @@
             }
         },
         methods: {
-            ...mapMutations(['addDebugMessage', 'addErrorMessage', 'toggleDebugWindow', 'toggleAutoLogin']),
+            ...mapMutations(['addDebugMessage', 'addErrorMessage', 'toggleDebugWindow', 'toggleAutoLogin',
+                'setFullscreen']),
             ...mapGetters(['isShowDebugWin', 'isAutoLogin']),
             onLogout() {
                 this.$router.push({
@@ -100,22 +111,19 @@
                     }
                 })
             },
-            onToggleFullscreen() {
-                if (navigator.userAgent.indexOf('Firefox') > -1)
-                    // Firefox handling
-                    if (document.mozFullScreen)
-                        document.mozCancelFullScreen();
-                    else
-                        document.documentElement.mozRequestFullScreen();
-                else if (navigator.userAgent.indexOf('Chrome') > -1)
-                    // Chrome handling
-                    if (document.webkitFullscreenElement)
-                        document.webkitExitFullscreen();
-                    else
-                        document.body.webkitRequestFullScreen();
-                else
-                    // Unsupported browsers
-                    this.addDebugMessage('Unsupported browser');
+            isFullscreen() {
+                this.addDebugMessage(navigator.userAgent);
+                return this.$store.state.isFullscreen;
+                // if (navigator.userAgent.indexOf('Firefox') > -1) {
+                //     // Firefox handling
+                //     console.log('fullscreenElement: ' + document.fullscreenElement);
+                //     console.log('mozFullScreen: ' + document.mozFullScreen);
+                //     return document.mozFullScreen === true;
+                // }
+                // else if (navigator.userAgent.indexOf('Chrome') > -1) {
+                //     console.log('webkitFullscreenElement: ' + document.webkitFullscreenElement);
+                //     return document.webkitFullscreenElement !== null;
+                // }
             }
         }
     }

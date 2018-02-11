@@ -15,12 +15,13 @@ export default new Vuex.Store({
         },
         debug: {
             isShow: true,
-            MaxMessages: 10,
+            MaxMessages: 30,
             messages: []
         },
         hasLocalStorage: false,
         isAutoLogin: true,
         isAutoFullscreen: true,
+        isFullscreen: false,
         DebugMessage: '',
         AppTitle: 'Woohoo',
         version: '[AIV]{version}[/AIV]'
@@ -39,6 +40,10 @@ export default new Vuex.Store({
             state.isAutoLogin = NewConfig.isAutoLogin;
             state.debug.isShow = NewConfig.isShowDebugWin;
             state.hasLocalStorage = true;
+        },
+        setFullscreen(state, NewValue) {
+            state.isFullscreen = NewValue;
+            console.log('store.isFullscreen: ' + NewValue);
         },
         isAutoUpdateLocalStore(state, NewValue) {
             state.isAutoUpdateLocalStore = NewValue;

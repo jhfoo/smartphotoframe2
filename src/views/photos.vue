@@ -54,7 +54,7 @@
                         </v-list-tile-action>
                         <v-list-tile-title>About</v-list-tile-title>
                     </v-list-tile>
-                    <v-list-tile @click="onToggleFullscreen()">
+                    <v-list-tile @click="toggleFullscreen()">
                         <v-list-tile-action>
                             <v-icon color="pink">check_box</v-icon>
                         </v-list-tile-action>
@@ -91,10 +91,12 @@
     import {
         mapMutations
     } from 'vuex';
+    import {ScreenToggle} from '../mixins/screentoggle';
 
     export default {
         name: 'Photos',
         components: {},
+        mixins:[ScreenToggle],
         props: ['AlbumId'],
         data() {
             return {
@@ -150,7 +152,8 @@
             console.log('photos.updated()');
         },
         methods: {
-            ...mapMutations(['addDebugMessage', 'addErrorMessage', 'toggleDebugWindow']),
+            ...mapMutations(['addDebugMessage', 'addErrorMessage', 'toggleDebugWindow',
+                'setFullscreen']),
             getWidth() {
                 return Math.max(
                     document.body.scrollWidth,
@@ -168,23 +171,6 @@
                     document.documentElement.offsetHeight,
                     document.documentElement.clientHeight
                 );
-            },
-            onToggleFullscreen() {
-                if (navigator.userAgent.indexOf('Firefox') > -1)
-                    // Firefox handling
-                    if (document.mozFullScreen)
-                        document.mozCancelFullScreen();
-                    else
-                        document.documentElement.mozRequestFullScreen();
-                else if (navigator.userAgent.indexOf('Chrome') > -1)
-                    // Chrome handling
-                    if (document.webkitFullscreenElement)
-                        document.webkitExitFullscreen();
-                    else
-                        document.body.webkitRequestFullScreen();
-                else
-                    // Unsupported browsers
-                    this.addDebugMessage('Unsupported browser');
             },
             onTransitionEnd(evt) {
                 this.addDebugMessage('photos.onTransitionEnd');
