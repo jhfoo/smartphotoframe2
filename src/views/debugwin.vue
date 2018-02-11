@@ -6,7 +6,7 @@
         width: 40%;
         height: 50%;
         background-color: rgba(0, 0, 0, 0.5);
-        color: #ccc;
+        color: #ccd;
         overflow-y: scroll;
         overflow-x: hidden;
     }

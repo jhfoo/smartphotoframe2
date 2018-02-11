@@ -8,7 +8,6 @@
     <v-app>
         <Appbar></Appbar>
         <router-view></router-view>
-        <Footer></Footer>
         <DebugWin></DebugWin>
     </v-app>
 </template>

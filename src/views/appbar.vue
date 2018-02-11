@@ -1,13 +1,17 @@
 <style>
+    .MyHeader {
+        background-color: rgba(255,255,255,0.0) !important; 
+        color: #fff !important;
+    }
 </style>
 
 <template>
-    <v-toolbar v-if="isShow" fixed app>
-        <v-toolbar-title v-text="title"></v-toolbar-title>
+    <v-toolbar v-if="isShow" fixed app flat class="MyHeader">
+        <v-toolbar-title v-text="title" ></v-toolbar-title>
         <v-spacer></v-spacer>
         <v-menu offset-y class="MiniMenu">
             <v-btn slot="activator" flat icon style="">
-                <v-icon>more_vert</v-icon>
+                <v-icon color="white">more_vert</v-icon>
             </v-btn>
             <v-list>
                 <v-subheader>Options</v-subheader>

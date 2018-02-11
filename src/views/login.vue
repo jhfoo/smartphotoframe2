@@ -109,6 +109,10 @@
                 TimerCountdown: 5
             }
         },
+        beforeRouteLeave(to, from, next) {
+            console.log('login.beforeRouteLeave');
+            next();
+        },
         computed: {
             isStatusLoggedIn() {
                 return this.status === STATUS_LOGGED_IN;
@@ -125,6 +129,11 @@
         },
         mounted: function () {
             this.addDebugMessage('event: login.mounted');
+
+            // set background
+            var AppEl = document.getElementById('app');
+            AppEl.style.backgroundImage = "url('/images/bg/zhang-xupeng-545066.jpg')";
+            AppEl.style.backgroundSize = 'cover';
 
             this.$store.commit('setAppbar', true);
             if (this.isLogout) {
