@@ -1,4 +1,4 @@
-// [AIV]  Build version: 1.10.0 - Sunday, February 11th, 2018, 1:47:12 AM  
+// [AIV]  Build version: 1.11.0 - Sunday, February 11th, 2018, 10:33:11 AM  
  /******/ (function(modules) { // webpackBootstrap
 /******/ 	// install a JSONP callback for chunk loading
 /******/ 	var parentJsonpFunction = window["webpackJsonp"];
@@ -16590,7 +16590,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
             isShow: true
         },
         debug: {
-            isShow: true,
+            isShow: false,
             MaxMessages: 30,
             messages: []
         },
@@ -16600,7 +16600,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
         isFullscreen: false,
         DebugMessage: '',
         AppTitle: 'Woohoo',
-        version: '1.10.0'
+        version: '1.11.0'
     },
     getters: {
         isShowDebugWin(state) {
