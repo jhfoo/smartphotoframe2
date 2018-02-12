@@ -1,88 +1,100 @@
 <style>
     .LoginCard {
-        width: 400px;
+        width: 100%;
         margin-left: auto;
         margin-right: auto;
     }
+
+    .LoginCard .CardTitle {
+        margin-top: 150px;
+        background-color: rgba(0, 0, 0, 0.6);
+        color: #fff;
+        width: 100%;
+        padding: 15px 10px 10px 10px;
+    }
 </style>
 <template>
-    <v-content>
-        <v-container fluid>
-            <v-slide-y-transition mode="out-in">
-                <v-layout column align-center>
-                    <v-card v-if="isStatusLoggedIn" class="LoginCard">
-                        <v-card-media class="white--text" height="200px" src="/images/card-login.jpg">
-                            <v-card-title primary-title>
-                                <h3 class="headline mb-0">Hello {{getFbAccountLastName()}}!</h3>
-                            </v-card-title>
-                        </v-card-media>
-                        <v-card-text>
-                            You are logged into Facebook. You will be redirected
-                            <br/> to select your albums in {{TimerCountdown}}secs.
-                            <br/>
-                            <br/>If this is not your account, select the Log off button below now.
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn @click.stop="onFbLogout" flat color="orange">
-                                <v-icon>exit_to_app</v-icon> Log off Facebook</v-btn>
-                        </v-card-actions>
-                    </v-card>
-                    <v-card v-if="isStatusLoginReady" class="LoginCard">
-                        <v-card-media class="white--text" height="200px" src="/images/card-login.jpg">
-                            <v-card-title primary-title>
-                                <h3 class="headline mb-0">Welcome!</h3>
-                            </v-card-title>
-                        </v-card-media>
-                        <v-card-text>
-                            <div>To proceed, please log into your Facebook account by
-                                <br/> selecting the Log In button below.</div>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn @click.stop="onFbLogin" flat color="orange">
-                                <v-icon>account_box</v-icon> Log in to Facebook</v-btn>
-                            <v-btn @click="$router.push('about')" flat color="orange">About</v-btn>
-                        </v-card-actions>
-                    </v-card>
-                    <v-card v-if="isStatusLoggingIn" class="LoginCard demo-card-event mdl-card mdl-shadow--2dp">
-                        <v-card-media class="white--text" height="200px" src="/images/card-logout.jpg">
-                            <v-card-title primary-title>
-                                <h3 class="headline mb-0">See You Soon</h3>
-                            </v-card-title>
-                        </v-card-media>
-                        <v-card-text>
-                            <div>To proceed, please log into your Facebook account by
-                                <br/> selecting the Log In button below.</div>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn @click.stop="onFbLogin" flat color="orange">
-                                <v-icon>account_box</v-icon> Log in to Facebook</v-btn>
-                            <v-btn @click="$router.push('about')" flat color="orange">About</v-btn>
-                        </v-card-actions>
-                    </v-card>
-                    <v-card v-if="isStatusLoggedOut" class="LoginCard demo-card-event mdl-card mdl-shadow--2dp">
-                        <v-card-media class="white--text" height="200px" src="/images/card-logout.jpg">
-                            <v-card-title primary-title>
-                                <h3 class="headline mb-0">See You Soon</h3>
-                            </v-card-title>
-                        </v-card-media>
-                        <v-card-text>
-                            <div>To proceed, please log into your Facebook account by
-                                <br/> selecting the Log In button below.</div>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn @click.stop="onFbLogin" flat color="orange">
-                                <v-icon>account_box</v-icon> Log in to Facebook</v-btn>
-                            <v-btn @click="$router.push('about')" flat color="orange">About</v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-layout>
-            </v-slide-y-transition>
-        </v-container>
-    </v-content>
+    <v-container fluid>
+        <v-layout row>
+            <v-flex xs12 sm6 md4 lg3 offset-sm5 offset-md7 offset-lg8>
+                <v-card v-if="isStatusLoggedIn" class="LoginCard">
+                    <v-card-media class="white--text" height="200px" src="/images/card-login.jpg">
+                        <div class="CardTitle">
+                            <h3 class="headline mb-0">Hello {{getFbAccountLastName()}}!</h3>
+                        </div>
+                    </v-card-media>
+                    <v-card-text>
+                        You are logged into Facebook. You will be redirected
+                        <br/> to select your albums in {{TimerCountdown}}secs.
+                        <br/>
+                        <br/>If this is not your account, select the Log off button below now.
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn @click.stop="onFbLogout" flat color="orange">
+                            <v-icon>exit_to_app</v-icon> Log off Facebook</v-btn>
+                    </v-card-actions>
+                </v-card>
+                <v-card v-if="isStatusLoginReady" class="LoginCard">
+                    <v-card-media class="white--text" height="200px" src="/images/card-login.jpg">
+                        <div class="CardTitle">
+                            <h3 class="headline mb-0">Welcome!</h3>
+                        </div>
+                    </v-card-media>
+                    <v-card-text>
+                        <div>
+                            To proceed, please log into your Facebook account by selecting the Log In button below.
+                        </div>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn @click.stop="onFbLogin" flat color="orange">
+                            <v-icon>account_box</v-icon> Log in to Facebook</v-btn>
+                        <v-btn @click="$router.push('about')" flat color="orange">About</v-btn>
+                    </v-card-actions>
+                </v-card>
+                <v-card v-if="isStatusLoggingIn" class="LoginCard demo-card-event mdl-card mdl-shadow--2dp">
+                    <v-card-media class="white--text" height="200px" src="/images/card-logout.jpg">
+                        <div class="CardTitle">
+                            <h3 class="headline mb-0">See You Soon</h3>
+                        </div>
+                    </v-card-media>
+                    <v-card-text>
+                        <div>To proceed, please log into your Facebook account by
+                            <br/> selecting the Log In button below.</div>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn @click.stop="onFbLogin" flat color="orange">
+                            <v-icon>account_box</v-icon> Log in to Facebook</v-btn>
+                        <v-btn @click="$router.push('about')" flat color="orange">About</v-btn>
+                    </v-card-actions>
+                </v-card>
+                <v-card v-if="isStatusLoggedOut" class="LoginCard demo-card-event mdl-card mdl-shadow--2dp">
+                    <v-card-media class="white--text" height="200px" src="/images/card-logout.jpg">
+                        <div class="CardTitle">
+                            <h3 class="headline mb-0">See You Soon</h3>
+                        </div>
+                    </v-card-media>
+                    <v-card-text>
+                        <div>To proceed, please log into your Facebook account by
+                            <br/> selecting the Log In button below.</div>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn @click.stop="onFbLogin" flat color="orange">
+                            <v-icon>account_box</v-icon> Log in to Facebook</v-btn>
+                        <v-btn @click="$router.push('about')" flat color="orange">About</v-btn>
+                    </v-card-actions>
+                </v-card>
+                <v-snackbar :timeout="SnackbarTimeout" :bottom="true" :multi-line="false"
+                    v-model="isShowSnackbar">
+                    {{ SnackbarText }}
+                    <v-btn flat color="pink" @click.native="snackbar = false">Close</v-btn>
+                </v-snackbar>
+            </v-flex>
+        </v-layout>
+    </v-container>
 </template>
 
 <script>
@@ -106,7 +118,10 @@
                 items: [],
                 status: STATUS_LOGIN_READY,
                 RedirectTimer: null,
-                TimerCountdown: 5
+                TimerCountdown: 5,
+                SnackbarTimeout: 2 * 1000,
+                isShowSnackbar: false,
+                SnackbarText: 'Logging in...'
             }
         },
         beforeRouteLeave(to, from, next) {
@@ -208,6 +223,7 @@
             },
             onFbLogin: function () {
                 this.setDebugMessage('Connecting to Facebook...');
+                this.isShowSnackbar = true;
                 FB.login(this.handleFbLoginResponse, {
                     scope: 'user_photos, public_profile'
                 });

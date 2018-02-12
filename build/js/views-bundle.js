@@ -1,4 +1,4 @@
-// [AIV]  Build version: 1.11.0 - Sunday, February 11th, 2018, 10:33:11 AM  
+// [AIV]  Build version: 1.12.0 - Sunday, February 11th, 2018, 11:22:00 PM  
  webpackJsonp([0,1],Array(20).concat([
 /* 20 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -5050,6 +5050,10 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 //
 //
+//
+//
+//
+//
 
 
 
@@ -5066,6 +5070,9 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
             AutoLoadSec: 0,
             AutoLoadTimeoutSec: 0,
             AutoLoadTimer: null,
+            SnackbarTimeout: 2 * 1000,
+            isShowSnackbar: false,
+            SnackbarText: 'Say something!',
             ListStyle: {}
         };
     },
@@ -5162,7 +5169,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                     self.loadFbAlbums(resp.paging.next);
                 } else {
                     // done loading pages
-                    self.setDebugMessage(self.albums.length + ' albums loaded');
+                    this.SnackbarText = self.albums.length + ' albums loaded. Showing top 5.';
+                    this.isShowSnackbar = true;
 
                     // load the first photo in album
                     console.log(self);
@@ -17335,6 +17343,18 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -17354,7 +17374,10 @@ const STATUS_LOGIN_READY = 'LOGIN_READY',
             items: [],
             status: STATUS_LOGIN_READY,
             RedirectTimer: null,
-            TimerCountdown: 5
+            TimerCountdown: 5,
+            SnackbarTimeout: 2 * 1000,
+            isShowSnackbar: false,
+            SnackbarText: 'Logging in...'
         };
     },
     beforeRouteLeave(to, from, next) {
@@ -17452,6 +17475,7 @@ const STATUS_LOGIN_READY = 'LOGIN_READY',
         },
         onFbLogin: function () {
             this.setDebugMessage('Connecting to Facebook...');
+            this.isShowSnackbar = true;
             FB.login(this.handleFbLoginResponse, {
                 scope: 'user_photos, public_profile'
             });
@@ -17965,7 +17989,39 @@ var render = function() {
         )
       }),
       _vm._v(" "),
-      _c("div", { staticStyle: { clear: "both" } })
+      _c(
+        "v-snackbar",
+        {
+          attrs: {
+            timeout: _vm.SnackbarTimeout,
+            bottom: true,
+            "multi-line": false
+          },
+          model: {
+            value: _vm.isShowSnackbar,
+            callback: function($$v) {
+              _vm.isShowSnackbar = $$v
+            },
+            expression: "isShowSnackbar"
+          }
+        },
+        [
+          _vm._v("\n        " + _vm._s(_vm.SnackbarText) + "\n        "),
+          _c(
+            "v-btn",
+            {
+              attrs: { flat: "", color: "pink" },
+              nativeOn: {
+                click: function($event) {
+                  _vm.snackbar = false
+                }
+              }
+            },
+            [_vm._v("Close")]
+          )
+        ],
+        1
+      )
     ],
     2
   )
@@ -18459,7 +18515,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\n.LoginCard {\n    width: 400px;\n    margin-left: auto;\n    margin-right: auto;\n}\n", ""]);
+exports.push([module.i, "\n.LoginCard {\n    width: 100%;\n    margin-left: auto;\n    margin-right: auto;\n}\n.LoginCard .CardTitle {\n    margin-top: 150px;\n    background-color: rgba(0, 0, 0, 0.6);\n    color: #fff;\n    width: 100%;\n    padding: 15px 10px 10px 10px;\n}\n", ""]);
 
 // exports
 
@@ -18474,348 +18530,368 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c(
-    "v-content",
+    "v-container",
+    { attrs: { fluid: "" } },
     [
       _c(
-        "v-container",
-        { attrs: { fluid: "" } },
+        "v-layout",
+        { attrs: { row: "" } },
         [
           _c(
-            "v-slide-y-transition",
-            { attrs: { mode: "out-in" } },
+            "v-flex",
+            {
+              attrs: {
+                xs12: "",
+                sm6: "",
+                md4: "",
+                lg3: "",
+                "offset-sm5": "",
+                "offset-md7": "",
+                "offset-lg8": ""
+              }
+            },
             [
+              _vm.isStatusLoggedIn
+                ? _c(
+                    "v-card",
+                    { staticClass: "LoginCard" },
+                    [
+                      _c(
+                        "v-card-media",
+                        {
+                          staticClass: "white--text",
+                          attrs: {
+                            height: "200px",
+                            src: "/images/card-login.jpg"
+                          }
+                        },
+                        [
+                          _c("div", { staticClass: "CardTitle" }, [
+                            _c("h3", { staticClass: "headline mb-0" }, [
+                              _vm._v(
+                                "Hello " +
+                                  _vm._s(_vm.getFbAccountLastName()) +
+                                  "!"
+                              )
+                            ])
+                          ])
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c("v-card-text", [
+                        _vm._v(
+                          "\n                    You are logged into Facebook. You will be redirected\n                    "
+                        ),
+                        _c("br"),
+                        _vm._v(
+                          " to select your albums in " +
+                            _vm._s(_vm.TimerCountdown) +
+                            "secs.\n                    "
+                        ),
+                        _c("br"),
+                        _vm._v(" "),
+                        _c("br"),
+                        _vm._v(
+                          "If this is not your account, select the Log off button below now.\n                "
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c(
+                        "v-card-actions",
+                        [
+                          _c("v-spacer"),
+                          _vm._v(" "),
+                          _c(
+                            "v-btn",
+                            {
+                              attrs: { flat: "", color: "orange" },
+                              on: {
+                                click: function($event) {
+                                  $event.stopPropagation()
+                                  _vm.onFbLogout($event)
+                                }
+                              }
+                            },
+                            [
+                              _c("v-icon", [_vm._v("exit_to_app")]),
+                              _vm._v(" Log off Facebook")
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.isStatusLoginReady
+                ? _c(
+                    "v-card",
+                    { staticClass: "LoginCard" },
+                    [
+                      _c(
+                        "v-card-media",
+                        {
+                          staticClass: "white--text",
+                          attrs: {
+                            height: "200px",
+                            src: "/images/card-login.jpg"
+                          }
+                        },
+                        [
+                          _c("div", { staticClass: "CardTitle" }, [
+                            _c("h3", { staticClass: "headline mb-0" }, [
+                              _vm._v("Welcome!")
+                            ])
+                          ])
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c("v-card-text", [
+                        _c("div", [
+                          _vm._v(
+                            "\n                        To proceed, please log into your Facebook account by selecting the Log In button below.\n                    "
+                          )
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c(
+                        "v-card-actions",
+                        [
+                          _c("v-spacer"),
+                          _vm._v(" "),
+                          _c(
+                            "v-btn",
+                            {
+                              attrs: { flat: "", color: "orange" },
+                              on: {
+                                click: function($event) {
+                                  $event.stopPropagation()
+                                  _vm.onFbLogin($event)
+                                }
+                              }
+                            },
+                            [
+                              _c("v-icon", [_vm._v("account_box")]),
+                              _vm._v(" Log in to Facebook")
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-btn",
+                            {
+                              attrs: { flat: "", color: "orange" },
+                              on: {
+                                click: function($event) {
+                                  _vm.$router.push("about")
+                                }
+                              }
+                            },
+                            [_vm._v("About")]
+                          )
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.isStatusLoggingIn
+                ? _c(
+                    "v-card",
+                    {
+                      staticClass:
+                        "LoginCard demo-card-event mdl-card mdl-shadow--2dp"
+                    },
+                    [
+                      _c(
+                        "v-card-media",
+                        {
+                          staticClass: "white--text",
+                          attrs: {
+                            height: "200px",
+                            src: "/images/card-logout.jpg"
+                          }
+                        },
+                        [
+                          _c("div", { staticClass: "CardTitle" }, [
+                            _c("h3", { staticClass: "headline mb-0" }, [
+                              _vm._v("See You Soon")
+                            ])
+                          ])
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c("v-card-text", [
+                        _c("div", [
+                          _vm._v(
+                            "To proceed, please log into your Facebook account by\n                        "
+                          ),
+                          _c("br"),
+                          _vm._v(" selecting the Log In button below.")
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c(
+                        "v-card-actions",
+                        [
+                          _c("v-spacer"),
+                          _vm._v(" "),
+                          _c(
+                            "v-btn",
+                            {
+                              attrs: { flat: "", color: "orange" },
+                              on: {
+                                click: function($event) {
+                                  $event.stopPropagation()
+                                  _vm.onFbLogin($event)
+                                }
+                              }
+                            },
+                            [
+                              _c("v-icon", [_vm._v("account_box")]),
+                              _vm._v(" Log in to Facebook")
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-btn",
+                            {
+                              attrs: { flat: "", color: "orange" },
+                              on: {
+                                click: function($event) {
+                                  _vm.$router.push("about")
+                                }
+                              }
+                            },
+                            [_vm._v("About")]
+                          )
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.isStatusLoggedOut
+                ? _c(
+                    "v-card",
+                    {
+                      staticClass:
+                        "LoginCard demo-card-event mdl-card mdl-shadow--2dp"
+                    },
+                    [
+                      _c(
+                        "v-card-media",
+                        {
+                          staticClass: "white--text",
+                          attrs: {
+                            height: "200px",
+                            src: "/images/card-logout.jpg"
+                          }
+                        },
+                        [
+                          _c("div", { staticClass: "CardTitle" }, [
+                            _c("h3", { staticClass: "headline mb-0" }, [
+                              _vm._v("See You Soon")
+                            ])
+                          ])
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c("v-card-text", [
+                        _c("div", [
+                          _vm._v(
+                            "To proceed, please log into your Facebook account by\n                        "
+                          ),
+                          _c("br"),
+                          _vm._v(" selecting the Log In button below.")
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c(
+                        "v-card-actions",
+                        [
+                          _c("v-spacer"),
+                          _vm._v(" "),
+                          _c(
+                            "v-btn",
+                            {
+                              attrs: { flat: "", color: "orange" },
+                              on: {
+                                click: function($event) {
+                                  $event.stopPropagation()
+                                  _vm.onFbLogin($event)
+                                }
+                              }
+                            },
+                            [
+                              _c("v-icon", [_vm._v("account_box")]),
+                              _vm._v(" Log in to Facebook")
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-btn",
+                            {
+                              attrs: { flat: "", color: "orange" },
+                              on: {
+                                click: function($event) {
+                                  _vm.$router.push("about")
+                                }
+                              }
+                            },
+                            [_vm._v("About")]
+                          )
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                : _vm._e(),
+              _vm._v(" "),
               _c(
-                "v-layout",
-                { attrs: { column: "", "align-center": "" } },
+                "v-snackbar",
+                {
+                  attrs: {
+                    timeout: _vm.SnackbarTimeout,
+                    bottom: true,
+                    "multi-line": false
+                  },
+                  model: {
+                    value: _vm.isShowSnackbar,
+                    callback: function($$v) {
+                      _vm.isShowSnackbar = $$v
+                    },
+                    expression: "isShowSnackbar"
+                  }
+                },
                 [
-                  _vm.isStatusLoggedIn
-                    ? _c(
-                        "v-card",
-                        { staticClass: "LoginCard" },
-                        [
-                          _c(
-                            "v-card-media",
-                            {
-                              staticClass: "white--text",
-                              attrs: {
-                                height: "200px",
-                                src: "/images/card-login.jpg"
-                              }
-                            },
-                            [
-                              _c(
-                                "v-card-title",
-                                { attrs: { "primary-title": "" } },
-                                [
-                                  _c("h3", { staticClass: "headline mb-0" }, [
-                                    _vm._v(
-                                      "Hello " +
-                                        _vm._s(_vm.getFbAccountLastName()) +
-                                        "!"
-                                    )
-                                  ])
-                                ]
-                              )
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c("v-card-text", [
-                            _vm._v(
-                              "\n                        You are logged into Facebook. You will be redirected\n                        "
-                            ),
-                            _c("br"),
-                            _vm._v(
-                              " to select your albums in " +
-                                _vm._s(_vm.TimerCountdown) +
-                                "secs.\n                        "
-                            ),
-                            _c("br"),
-                            _vm._v(" "),
-                            _c("br"),
-                            _vm._v(
-                              "If this is not your account, select the Log off button below now.\n                    "
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _c(
-                            "v-card-actions",
-                            [
-                              _c("v-spacer"),
-                              _vm._v(" "),
-                              _c(
-                                "v-btn",
-                                {
-                                  attrs: { flat: "", color: "orange" },
-                                  on: {
-                                    click: function($event) {
-                                      $event.stopPropagation()
-                                      _vm.onFbLogout($event)
-                                    }
-                                  }
-                                },
-                                [
-                                  _c("v-icon", [_vm._v("exit_to_app")]),
-                                  _vm._v(" Log off Facebook")
-                                ],
-                                1
-                              )
-                            ],
-                            1
-                          )
-                        ],
-                        1
-                      )
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _vm.isStatusLoginReady
-                    ? _c(
-                        "v-card",
-                        { staticClass: "LoginCard" },
-                        [
-                          _c(
-                            "v-card-media",
-                            {
-                              staticClass: "white--text",
-                              attrs: {
-                                height: "200px",
-                                src: "/images/card-login.jpg"
-                              }
-                            },
-                            [
-                              _c(
-                                "v-card-title",
-                                { attrs: { "primary-title": "" } },
-                                [
-                                  _c("h3", { staticClass: "headline mb-0" }, [
-                                    _vm._v("Welcome!")
-                                  ])
-                                ]
-                              )
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c("v-card-text", [
-                            _c("div", [
-                              _vm._v(
-                                "To proceed, please log into your Facebook account by\n                            "
-                              ),
-                              _c("br"),
-                              _vm._v(" selecting the Log In button below.")
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c(
-                            "v-card-actions",
-                            [
-                              _c("v-spacer"),
-                              _vm._v(" "),
-                              _c(
-                                "v-btn",
-                                {
-                                  attrs: { flat: "", color: "orange" },
-                                  on: {
-                                    click: function($event) {
-                                      $event.stopPropagation()
-                                      _vm.onFbLogin($event)
-                                    }
-                                  }
-                                },
-                                [
-                                  _c("v-icon", [_vm._v("account_box")]),
-                                  _vm._v(" Log in to Facebook")
-                                ],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "v-btn",
-                                {
-                                  attrs: { flat: "", color: "orange" },
-                                  on: {
-                                    click: function($event) {
-                                      _vm.$router.push("about")
-                                    }
-                                  }
-                                },
-                                [_vm._v("About")]
-                              )
-                            ],
-                            1
-                          )
-                        ],
-                        1
-                      )
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _vm.isStatusLoggingIn
-                    ? _c(
-                        "v-card",
-                        {
-                          staticClass:
-                            "LoginCard demo-card-event mdl-card mdl-shadow--2dp"
-                        },
-                        [
-                          _c(
-                            "v-card-media",
-                            {
-                              staticClass: "white--text",
-                              attrs: {
-                                height: "200px",
-                                src: "/images/card-logout.jpg"
-                              }
-                            },
-                            [
-                              _c(
-                                "v-card-title",
-                                { attrs: { "primary-title": "" } },
-                                [
-                                  _c("h3", { staticClass: "headline mb-0" }, [
-                                    _vm._v("See You Soon")
-                                  ])
-                                ]
-                              )
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c("v-card-text", [
-                            _c("div", [
-                              _vm._v(
-                                "To proceed, please log into your Facebook account by\n                            "
-                              ),
-                              _c("br"),
-                              _vm._v(" selecting the Log In button below.")
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c(
-                            "v-card-actions",
-                            [
-                              _c("v-spacer"),
-                              _vm._v(" "),
-                              _c(
-                                "v-btn",
-                                {
-                                  attrs: { flat: "", color: "orange" },
-                                  on: {
-                                    click: function($event) {
-                                      $event.stopPropagation()
-                                      _vm.onFbLogin($event)
-                                    }
-                                  }
-                                },
-                                [
-                                  _c("v-icon", [_vm._v("account_box")]),
-                                  _vm._v(" Log in to Facebook")
-                                ],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "v-btn",
-                                {
-                                  attrs: { flat: "", color: "orange" },
-                                  on: {
-                                    click: function($event) {
-                                      _vm.$router.push("about")
-                                    }
-                                  }
-                                },
-                                [_vm._v("About")]
-                              )
-                            ],
-                            1
-                          )
-                        ],
-                        1
-                      )
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _vm.isStatusLoggedOut
-                    ? _c(
-                        "v-card",
-                        {
-                          staticClass:
-                            "LoginCard demo-card-event mdl-card mdl-shadow--2dp"
-                        },
-                        [
-                          _c(
-                            "v-card-media",
-                            {
-                              staticClass: "white--text",
-                              attrs: {
-                                height: "200px",
-                                src: "/images/card-logout.jpg"
-                              }
-                            },
-                            [
-                              _c(
-                                "v-card-title",
-                                { attrs: { "primary-title": "" } },
-                                [
-                                  _c("h3", { staticClass: "headline mb-0" }, [
-                                    _vm._v("See You Soon")
-                                  ])
-                                ]
-                              )
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c("v-card-text", [
-                            _c("div", [
-                              _vm._v(
-                                "To proceed, please log into your Facebook account by\n                            "
-                              ),
-                              _c("br"),
-                              _vm._v(" selecting the Log In button below.")
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c(
-                            "v-card-actions",
-                            [
-                              _c("v-spacer"),
-                              _vm._v(" "),
-                              _c(
-                                "v-btn",
-                                {
-                                  attrs: { flat: "", color: "orange" },
-                                  on: {
-                                    click: function($event) {
-                                      $event.stopPropagation()
-                                      _vm.onFbLogin($event)
-                                    }
-                                  }
-                                },
-                                [
-                                  _c("v-icon", [_vm._v("account_box")]),
-                                  _vm._v(" Log in to Facebook")
-                                ],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "v-btn",
-                                {
-                                  attrs: { flat: "", color: "orange" },
-                                  on: {
-                                    click: function($event) {
-                                      _vm.$router.push("about")
-                                    }
-                                  }
-                                },
-                                [_vm._v("About")]
-                              )
-                            ],
-                            1
-                          )
-                        ],
-                        1
-                      )
-                    : _vm._e()
+                  _vm._v(
+                    "\n                " +
+                      _vm._s(_vm.SnackbarText) +
+                      "\n                "
+                  ),
+                  _c(
+                    "v-btn",
+                    {
+                      attrs: { flat: "", color: "pink" },
+                      nativeOn: {
+                        click: function($event) {
+                          _vm.snackbar = false
+                        }
+                      }
+                    },
+                    [_vm._v("Close")]
+                  )
                 ],
                 1
               )

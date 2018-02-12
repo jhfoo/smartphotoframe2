@@ -48,7 +48,11 @@
                 </div>
             </v-card-media>
         </v-card>
-        <div style="clear:both"></div>
+        <v-snackbar :timeout="SnackbarTimeout" :bottom="true" :multi-line="false" v-model="isShowSnackbar">
+            {{ SnackbarText }}
+            <v-btn flat color="pink" @click.native="snackbar = false">Close</v-btn>
+        </v-snackbar>
+
     </div>
 </template>
 
@@ -70,6 +74,9 @@
                 AutoLoadSec: 0,
                 AutoLoadTimeoutSec: 0,
                 AutoLoadTimer: null,
+                SnackbarTimeout: 2 * 1000,
+                isShowSnackbar: false,
+                SnackbarText: 'Say something!',
                 ListStyle: {
 
                 }
@@ -177,7 +184,8 @@
                         self.loadFbAlbums(resp.paging.next);
                     } else {
                         // done loading pages
-                        self.setDebugMessage(self.albums.length + ' albums loaded');
+                        this.SnackbarText = self.albums.length + ' albums loaded. Showing top 5.';
+                        this.isShowSnackbar = true;
 
                         // load the first photo in album
                         console.log(self);

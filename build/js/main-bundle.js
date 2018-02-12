@@ -1,4 +1,4 @@
-// [AIV]  Build version: 1.11.0 - Sunday, February 11th, 2018, 10:33:11 AM  
+// [AIV]  Build version: 1.12.0 - Sunday, February 11th, 2018, 11:22:00 PM  
  /******/ (function(modules) { // webpackBootstrap
 /******/ 	// install a JSONP callback for chunk loading
 /******/ 	var parentJsonpFunction = window["webpackJsonp"];
@@ -15872,6 +15872,8 @@ if (inBrowser && window.Vue) {
 //
 //
 //
+//
+//
 
 
 
@@ -15891,7 +15893,9 @@ if (inBrowser && window.Vue) {
         }
     },
     components: {
-        Appbar: __WEBPACK_IMPORTED_MODULE_0__appbar_vue__["a" /* default */], Footer: __WEBPACK_IMPORTED_MODULE_1__footer_vue__["a" /* default */], DebugWin: __WEBPACK_IMPORTED_MODULE_2__debugwin_vue__["a" /* default */]
+        Appbar: __WEBPACK_IMPORTED_MODULE_0__appbar_vue__["a" /* default */],
+        Footer: __WEBPACK_IMPORTED_MODULE_1__footer_vue__["a" /* default */],
+        DebugWin: __WEBPACK_IMPORTED_MODULE_2__debugwin_vue__["a" /* default */]
     },
     computed: {
         getCount: {
@@ -16600,7 +16604,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
         isFullscreen: false,
         DebugMessage: '',
         AppTitle: 'Woohoo',
-        version: '1.11.0'
+        version: '1.12.0'
     },
     getters: {
         isShowDebugWin(state) {
@@ -35903,7 +35907,13 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "v-app",
-    [_c("Appbar"), _vm._v(" "), _c("router-view"), _vm._v(" "), _c("DebugWin")],
+    [
+      _c("Appbar"),
+      _vm._v(" "),
+      _c("v-content", [_c("router-view")], 1),
+      _vm._v(" "),
+      _c("DebugWin")
+    ],
     1
   )
 }

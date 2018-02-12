@@ -7,7 +7,9 @@
 <template>
     <v-app>
         <Appbar></Appbar>
-        <router-view></router-view>
+        <v-content>
+            <router-view></router-view>
+        </v-content>
         <DebugWin></DebugWin>
     </v-app>
 </template>
@@ -18,7 +20,7 @@
     import DebugWin from './debugwin.vue';
 
     export default {
-        mounted: function() {
+        mounted: function () {
             // load stored preferences if avail
             if (window.localStorage) {
                 var StoredConfig = window.localStorage.getItem('config');
@@ -31,14 +33,16 @@
             }
         },
         components: {
-            Appbar, Footer, DebugWin
+            Appbar,
+            Footer,
+            DebugWin
         },
         computed: {
             getCount: {
-                get: function() {
+                get: function () {
                     return this.$store.state.LeftDrawer.isShow;
                 },
-                set: function(NewValue) {
+                set: function (NewValue) {
                     this.$store.commit('setLeftDrawer', NewValue);
                 }
             }
