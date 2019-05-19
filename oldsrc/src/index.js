@@ -23,7 +23,7 @@ window.fbAsyncInit = function () {
     FB.init({
         appId: '1419591801401458',
         xfbml: true,
-        version: 'v2.11'
+        version: 'v3.3'
     });
 
     const VueApp = initVue();

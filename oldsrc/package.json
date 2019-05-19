@@ -1,0 +1,46 @@
+{
+    "name": "smartphotoframe2",
+    "version": "1.12.13",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "build": "./node_modules/.bin/webpack --env.minor",
+        "dev": "cross-env NODE_ENV=DEVELOPMENT ./node_modules/.bin/webpack-dev-server --env.patch --content-base build --host 0.0.0.0",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jhfoo/smartphotoframe2.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "axios": "^0.18.0",
+        "vue": "^2.6.10",
+        "vue-router": "*3.0.1"
+    },
+    "devDependencies": {
+        "babel-core": "*",
+        "babel-loader": "*",
+        "babel-plugin-transform-object-rest-spread": "*",
+        "babel-preset-es2015": "*",
+        "cross-env": "*",
+        "css-loader": "*",
+        "moment": "*",
+        "style-loader": "*",
+        "vue-loader": "*",
+        "vue-template-compiler": "*",
+        "vuetify": "^1.5.14",
+        "vuex": "*",
+        "webpack": "^4.31.0",
+        "webpack-auto-inject-version": "*",
+        "webpack-bundle-analyzer": "^3.3.2",
+        "webpack-cli": "^3.3.2",
+        "webpack-dev-server": "^3.3.1"
+    },
+    "bugs": {
+        "url": "https://github.com/jhfoo/smartphotoframe2/issues"
+    },
+    "homepage": "https://github.com/jhfoo/smartphotoframe2#readme"
+}

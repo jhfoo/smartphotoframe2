@@ -1,4 +1,5 @@
 const path = require('path'),
+    fs = require('fs'),
     webpack = require('webpack'),
     WebpackAutoInject = require('webpack-auto-inject-version'),
     BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -60,12 +61,13 @@ module.exports = {
                 test: /\.css$/,
                 loader: ['style-loader', 'css-loader']
             }
-        ],
-        loaders: []
+        ]
     },
     devServer: {
         allowedHosts: [
-            '.kungfoo.home'
-        ]
+            '.kungfoo.home',
+            '.kungfoo.local'
+        ],
+        https: true
     }
 };
